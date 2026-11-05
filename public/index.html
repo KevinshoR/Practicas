@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sumas para ti — Motor Antifraude Corporativo</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- TailwindCSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          boxShadow: {
+            card: '0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03)',
+            elevated: '0 10px 30px -4px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.04)',
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+
+    /* Transiciones suaves para controles interactivos */
+    .ui-transition {
+      transition: all 0.3s ease;
+    }
+
+    /* Acabado de inputs y selects corporativos */
+    .form-control {
+      transition: all 0.3s ease;
+      box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.04);
+    }
+
+    .form-control:hover {
+      border-color: #94a3b8;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
+    /* Botones con elevación al pasar el cursor */
+    .btn-primary {
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+      background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+      border-color: #94a3b8;
+    }
+
+    /* Scrollbar sutil para el visor JSON */
+    #jsonSumas::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    #jsonSumas::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 8px;
+    }
+    #jsonSumas::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 8px;
+    }
+    #jsonSumas::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-blue-600 selection:text-white">
+
+  <!-- BARRA SUPERIOR (Top Nav) -->
+  <header class="bg-white/90 backdrop-blur-md border-b border-slate-200/80 h-16 px-4 sm:px-8 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+    <!-- Izquierda: Marca corporativa -->
+    <div class="flex items-center gap-3.5">
+      <button
+        type="button"
+        class="p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 ui-transition focus:outline-none"
+        title="Menú principal"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-bold text-sm shadow-sm">
+          S
+        </div>
+        <div class="flex flex-col">
+          <span class="text-slate-900 font-bold text-base leading-none tracking-tight">Sumas para ti</span>
+          <span class="text-[11px] font-medium text-slate-400 mt-0.5">Risk & Fraud Intelligence</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Centro: Barra de búsqueda "Ctrl + k" -->
+    <div class="hidden md:block flex-1 max-w-md mx-6">
+      <div class="relative flex items-center">
+        <svg class="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 103.5 10.5a7.5 7.5 0 0013.15 6.15z" />
+        </svg>
+        <input
+          type="text"
+          placeholder="Buscar transacciones, cédulas o reglas..."
+          class="form-control w-full bg-slate-50/80 border border-slate-200 rounded-xl pl-10 pr-20 py-2 text-sm text-slate-700 placeholder-slate-400 focus:bg-white"
+        />
+        <span class="absolute right-2.5 text-[11px] text-slate-400 bg-white border border-slate-200 rounded-md px-2 py-0.5 font-mono shadow-2xs">
+          Ctrl + k
+        </span>
+      </div>
+    </div>
+
+    <!-- Derecha: Perfil Corporativo -->
+    <div class="flex items-center gap-3">
+      <button
+        type="button"
+        class="ui-transition border border-blue-200 bg-blue-50/50 hover:bg-blue-50 text-slate-700 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium flex items-center gap-2.5 shadow-2xs"
+      >
+        <span class="relative flex h-2.5 w-2.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-600"></span>
+        </span>
+        <span class="font-medium text-slate-800">kevin.me</span>
+        <span class="text-slate-300">|</span>
+        <span class="text-blue-700 font-semibold">Seguridad</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- CONTENEDOR PRINCIPAL -->
+  <div class="flex flex-1 flex-col lg:flex-row">
+
+    <!-- BARRA LATERAL (Sidebar) -->
+    <aside class="w-full lg:w-64 bg-white border-b lg:border-b-0 lg:border-r border-slate-200/80 flex flex-col justify-between shrink-0">
+      <nav class="p-4 lg:py-6 lg:px-3">
+        <p class="hidden lg:block px-3 mb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+          Menú Principal
+        </p>
+        <ul class="flex lg:flex-col gap-1.5 overflow-x-auto">
+          <!-- Herramientas -->
+          <li class="shrink-0">
+            <a
+              href="#"
+              class="ui-transition flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100/80 hover:text-slate-900"
+            >
+              <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span>Herramientas</span>
+            </a>
+          </li>
+
+          <!-- Administración -->
+          <li class="shrink-0">
+            <a
+              href="#"
+              class="ui-transition flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100/80 hover:text-slate-900"
+            >
+              <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+              </svg>
+              <span>Administración</span>
+            </a>
+          </li>
+
+          <!-- Gestor de fraudes (ACTIVO) -->
+          <li class="shrink-0">
+            <a
+              href="#"
+              class="ui-transition flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-blue-700 bg-blue-50/90 border-l-4 border-blue-600 shadow-2xs"
+            >
+              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              <span>Gestor de fraudes</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Botón Cerrar sesión abajo -->
+      <div class="hidden lg:block p-4 border-t border-slate-100">
+        <button
+          type="button"
+          class="ui-transition w-full flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-slate-500 hover:text-red-600 hover:bg-red-50/80 rounded-xl"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          <span>Cerrar sesión</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ÁREA CENTRAL -->
+    <main class="flex-1 p-4 sm:p-8 lg:p-10 overflow-y-auto">
+      <div class="max-w-6xl mx-auto space-y-8">
+
+        <!-- Encabezado de página -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-blue-50 border border-blue-200/60 text-blue-700 text-xs font-semibold mb-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+              Motor de Reglas en Tiempo Real
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              Módulo <span class="text-blue-600">Simulador Antifraude</span>
+            </h1>
+            <p class="text-sm text-slate-500 mt-1">
+              Evalúa transacciones de clientes cruzando biometría, historial crediticio, zonas de riesgo y matriz de confianza.
+            </p>
+          </div>
+        </div>
+
+        <!-- Tarjeta de Filtros -->
+        <section class="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-card">
+          <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+              </div>
+              <div>
+                <h2 class="text-base font-bold text-slate-800">Filtros de Búsqueda</h2>
+                <p class="text-xs text-slate-400">Configura los parámetros de la transacción a simular</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4 campos en línea -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+            <!-- 1. Select Cédula -->
+            <div>
+              <label for="cedula" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
+                Cédula del Cliente
+              </label>
+              <select
+                id="cedula"
+                class="form-control w-full bg-slate-50/50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium text-slate-800 focus:bg-white"
+              >
+                <option value="1001001001">1001001001</option>
+                <option value="2002002002">2002002002</option>
+                <option value="3003003003">3003003003</option>
+                <option value="4004004004">4004004004</option>
+              </select>
+            </div>
+
+            <!-- 2. Input Number Monto -->
+            <div>
+              <label for="monto" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
+                Monto Transacción (COP)
+              </label>
+              <input
+                id="monto"
+                type="number"
+                value="1500000"
+                class="form-control w-full bg-slate-50/50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium text-slate-800 focus:bg-white"
+              />
+            </div>
+
+            <!-- 3. Input Text Ciudad Origen -->
+            <div>
+              <label for="ciudad" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
+                Ciudad Origen
+              </label>
+              <input
+                id="ciudad"
+                type="text"
+                value="Medellin"
+                class="form-control w-full bg-slate-50/50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium text-slate-800 focus:bg-white"
+              />
+            </div>
+
+            <!-- 4. Select Estado/Proceso -->
+            <div>
+              <label for="tipo" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
+                Estado / Proceso
+              </label>
+              <select
+                id="tipo"
+                class="form-control w-full bg-slate-50/50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium text-slate-800 focus:bg-white"
+              >
+                <option value="onboarding">onboarding</option>
+                <option value="monitoreo">monitoreo</option>
+                <option value="cambio_datos">cambio_datos</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Botones de Acción -->
+          <div class="flex items-center gap-3 pt-2">
+            <button
+              id="btnFiltro"
+              type="button"
+              class="btn-primary flex-1 text-white font-semibold py-3 px-6 rounded-xl text-sm flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              <span>Filtro</span>
+            </button>
+
+            <button
+              id="btnRefrescar"
+              type="button"
+              title="Refrescar formulario"
+              class="btn-secondary w-11 h-11 bg-white hover:bg-slate-50 border border-slate-300 rounded-xl flex items-center justify-center text-slate-600 hover:text-slate-900 shrink-0 cursor-pointer"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            </button>
+          </div>
+        </section>
+
+        <!-- PANELES DE RESULTADO (Ocultos por defecto) -->
+        <section id="panelesResultado" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Tarjeta Izquierda: Datos de SumasParaTi -->
+          <div class="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-7 shadow-card flex flex-col">
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+              <div class="flex items-center gap-2.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                <h3 class="text-base font-bold text-slate-800">
+                  Datos de SumasParaTi
+                </h3>
+              </div>
+              <span class="text-[11px] font-mono font-medium text-slate-400 bg-slate-100 px-2.5 py-0.5 rounded-md">
+                JSON Payload
+              </span>
+            </div>
+            <pre
+              id="jsonSumas"
+              class="bg-slate-900 text-slate-100 border border-slate-800 rounded-xl p-4 text-xs font-mono leading-relaxed overflow-x-auto flex-1 max-h-96 shadow-inner"
+            ></pre>
+          </div>
+
+          <!-- Tarjeta Derecha: Veredicto Motor Antifraude -->
+          <div class="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-7 shadow-card flex flex-col">
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+              <div class="flex items-center gap-2.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
+                <h3 class="text-base font-bold text-slate-800">
+                  Veredicto Motor Antifraude
+                </h3>
+              </div>
+              <span class="text-[11px] font-medium text-slate-400 bg-slate-100 px-2.5 py-0.5 rounded-md">
+                Decisión Automática
+              </span>
+            </div>
+
+            <div class="flex-1 flex flex-col items-center justify-center text-center py-10 px-6 bg-slate-50/60 rounded-xl border border-slate-100">
+              <span
+                id="badgeVeredicto"
+                class="inline-block text-2xl font-extrabold tracking-wider px-8 py-3 rounded-full mb-4 shadow-xs"
+              >
+                --
+              </span>
+              <p id="motivoVeredicto" class="text-sm text-slate-600 max-w-md font-medium leading-relaxed"></p>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- LÓGICA JAVASCRIPT INTACTA -->
+  <script>
+    const btnFiltro = document.getElementById('btnFiltro');
+    const btnRefrescar = document.getElementById('btnRefrescar');
+    const panelesResultado = document.getElementById('panelesResultado');
+    const jsonSumas = document.getElementById('jsonSumas');
+    const badgeVeredicto = document.getElementById('badgeVeredicto');
+    const motivoVeredicto = document.getElementById('motivoVeredicto');
+
+    btnFiltro.addEventListener('click', async () => {
+      const cedula = document.getElementById('cedula').value;
+      const monto = Number(document.getElementById('monto').value);
+      const ciudad = document.getElementById('ciudad').value;
+      const tipo = document.getElementById('tipo').value;
+
+      panelesResultado.classList.remove('hidden');
+      jsonSumas.textContent = 'Cargando datos del cliente...';
+      badgeVeredicto.textContent = '...';
+      badgeVeredicto.className =
+        'inline-block text-2xl font-extrabold tracking-wider px-8 py-3 rounded-full mb-4 bg-gray-100 text-gray-600';
+      motivoVeredicto.textContent = 'Evaluando reglas antifraude...';
+
+      try {
+        // A) Fetch GET a http://localhost:3000/sumas/cliente/{cedula}
+        const resSumas = await fetch(`http://localhost:3000/sumas/cliente/${cedula}`);
+        const datos = await resSumas.json();
+
+        // Mostrar JSON en la Tarjeta Izquierda
+        jsonSumas.textContent = JSON.stringify(datos, null, 2);
+
+        // B) Construir objeto JSON para el antifraude
+        const payload = {
+          alerta: {
+            transactionId: 'TXN-123',
+            tienda: 'Simulador',
+            monto: monto,
+            tipo: tipo,
+            ciudadOrigen: ciudad,
+          },
+          datos: {
+            celular: datos.celular,
+            correo: datos.correo,
+            direccion: datos.direccion,
+          },
+          biometria: datos.biometria,
+          historial: datos.historial,
+          ciudadesFrecuentes: datos.ciudadesFrecuentes,
+        };
+
+        // C) Fetch POST a http://localhost:3000/decision/{tipo}
+        const resDecision = await fetch(`http://localhost:3000/decision/${tipo}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const resultado = await resDecision.json();
+
+        // D) Mostrar la decisión (PASA/BLOQUEA) y el motivo en la Tarjeta Derecha
+        const rawDecision = String(resultado.decision || resultado.veredicto || '').toUpperCase();
+        const pasa = rawDecision === 'PASA';
+
+        if (pasa) {
+          badgeVeredicto.textContent = 'PASA';
+          badgeVeredicto.className =
+            'inline-block text-2xl font-extrabold tracking-wider px-8 py-3 rounded-full mb-4 bg-green-100 text-green-700 border border-green-300';
+        } else {
+          badgeVeredicto.textContent = 'BLOQUEA';
+          badgeVeredicto.className =
+            'inline-block text-2xl font-extrabold tracking-wider px-8 py-3 rounded-full mb-4 bg-red-100 text-red-700 border border-red-300';
+        }
+
+        motivoVeredicto.textContent = resultado.motivo || 'Sin motivo especificado.';
+      } catch (error) {
+        badgeVeredicto.textContent = 'BLOQUEA';
+        badgeVeredicto.className =
+          'inline-block text-2xl font-extrabold tracking-wider px-8 py-3 rounded-full mb-4 bg-red-100 text-red-700 border border-red-300';
+        motivoVeredicto.textContent = 'Error al conectar con el servidor: ' + error.message;
+      }
+    });
+
+    btnRefrescar.addEventListener('click', () => {
+      document.getElementById('cedula').value = '1001001001';
+      document.getElementById('monto').value = '1500000';
+      document.getElementById('ciudad').value = 'Medellin';
+      document.getElementById('tipo').value = 'onboarding';
+      panelesResultado.classList.add('hidden');
+      jsonSumas.textContent = '';
+      badgeVeredicto.textContent = '--';
+      motivoVeredicto.textContent = '';
+    });
+  </script>
+</body>
+</html>

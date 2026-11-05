@@ -1,0 +1,8 @@
+{
+  "alerta": { "transactionId": "PRUEBA-1", "tienda": "EXITO", "monto": 4000000, "tipo": "onboarding", "consumoPct": 10 },
+  "datos": {
+    "celular": { "reportes": 44, "entidades": 5, "habitual": true },
+    "correo": { "reportes": 23, "entidades": 5, "habitual": true }
+  },
+  "biometria": { "disponible": true, "proveedor": "unicus", "nivelUnicus": 6 }
+}
