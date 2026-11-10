@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SumasController } from './sumas.controller';
+import { SumasService } from './sumas.service';
 
 describe('SumasController', () => {
   let controller: SumasController;
@@ -7,6 +8,7 @@ describe('SumasController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [SumasController],
+      providers: [SumasService],
     }).compile();
 
     controller = module.get<SumasController>(SumasController);
@@ -16,3 +18,4 @@ describe('SumasController', () => {
     expect(controller).toBeDefined();
   });
 });
+

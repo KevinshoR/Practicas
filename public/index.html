@@ -3,214 +3,179 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sumas para ti — Motor Antifraude Corporativo</title>
-
-  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <title>Sumas para ti</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
     rel="stylesheet"
   />
-
-  <!-- TailwindCSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
-          },
-          boxShadow: {
-            card: '0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03)',
-            elevated: '0 10px 30px -4px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.04)',
-          },
-        },
-      },
-    };
-  </script>
-
   <style>
     body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background-color: #f8fafc;
-      color: #0f172a;
+      font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: #1f2937;
+      background-color: #ffffff;
     }
 
-    /* Transiciones suaves para controles interactivos */
-    .ui-transition {
-      transition: all 0.3s ease;
+    /* Estilo del input "Documento" con etiqueta flotante igual a la captura 2 */
+    .doc-input-wrapper {
+      position: relative;
+    }
+    .doc-floating-label {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #ffffff;
+      padding: 0 4px;
+      color: #6b7280;
+      font-size: 14px;
+      pointer-events: none;
+      transition: all 0.18s ease;
+    }
+    .doc-input:focus + .doc-floating-label,
+    .doc-input:not(:placeholder-shown) + .doc-floating-label {
+      top: 0;
+      font-size: 11px;
+      color: #4b5563;
     }
 
-    /* Acabado de inputs y selects corporativos */
-    .form-control {
-      transition: all 0.3s ease;
-      box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.04);
+    /* Tarjetas con borde naranja idénticas a las capturas */
+    .sumas-card {
+      border: 1px solid #f97316;
+      border-radius: 16px;
+      background: #ffffff;
     }
 
-    .form-control:hover {
-      border-color: #94a3b8;
+    /* Botones con borde naranja idénticos a las capturas */
+    .sumas-btn-outline {
+      border: 1px solid #f97316;
+      color: #f97316;
+      background: #ffffff;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+    .sumas-btn-outline:hover {
+      background: #fff7ed;
+    }
+    .sumas-btn-outline:active {
+      background: #ffedd5;
     }
 
-    .form-control:focus {
-      outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
-    }
-
-    /* Botones con elevación al pasar el cursor */
-    .btn-primary {
-      transition: all 0.3s ease;
-      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
-      background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
-    }
-
-    .btn-primary:active {
-      transform: translateY(0);
-    }
-
-    .btn-secondary {
-      transition: all 0.3s ease;
-    }
-
-    .btn-secondary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
-      border-color: #94a3b8;
-    }
-
-    /* Scrollbar sutil para el visor JSON */
-    #jsonSumas::-webkit-scrollbar {
+    /* Scrollbar sutil */
+    ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
     }
-    #jsonSumas::-webkit-scrollbar-track {
-      background: #f1f5f9;
-      border-radius: 8px;
+    ::-webkit-scrollbar-track {
+      background: #f9fafb;
     }
-    #jsonSumas::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 8px;
+    ::-webkit-scrollbar-thumb {
+      background: #d1d5db;
+      border-radius: 4px;
     }
-    #jsonSumas::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
+    ::-webkit-scrollbar-thumb:hover {
+      background: #9ca3af;
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-blue-600 selection:text-white">
+<body class="min-h-screen flex flex-col bg-white select-none sm:select-auto">
 
-  <!-- BARRA SUPERIOR (Top Nav) -->
-  <header class="bg-white/90 backdrop-blur-md border-b border-slate-200/80 h-16 px-4 sm:px-8 flex items-center justify-between sticky top-0 z-30 shadow-xs">
-    <!-- Izquierda: Marca corporativa -->
-    <div class="flex items-center gap-3.5">
+  <!-- ===================================================================== -->
+  <!-- BARRA SUPERIOR (Top Nav) — Idéntica a las capturas                    -->
+  <!-- ===================================================================== -->
+  <header class="bg-[#f5f5f5] border-b border-gray-200 h-[56px] px-6 flex items-center justify-between sticky top-0 z-30">
+    <!-- Izquierda: Icono menú naranja + separador + "Sumas para ti" -->
+    <div class="flex items-center">
       <button
+        id="btnToggleSidebar"
         type="button"
-        class="p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 ui-transition focus:outline-none"
-        title="Menú principal"
+        class="text-[#f97316] hover:bg-orange-50 p-1.5 rounded focus:outline-none"
+        title="Menú"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>
-
-      <div class="flex items-center gap-2.5">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-bold text-sm shadow-sm">
-          S
-        </div>
-        <div class="flex flex-col">
-          <span class="text-slate-900 font-bold text-base leading-none tracking-tight">Sumas para ti</span>
-          <span class="text-[11px] font-medium text-slate-400 mt-0.5">Risk & Fraud Intelligence</span>
-        </div>
-      </div>
+      <div class="h-5 border-l border-gray-300 mx-5"></div>
+      <span class="text-gray-500 font-medium text-[14px]">Sumas para ti</span>
     </div>
 
-    <!-- Centro: Barra de búsqueda "Ctrl + k" -->
-    <div class="hidden md:block flex-1 max-w-md mx-6">
-      <div class="relative flex items-center">
-        <svg class="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+    <!-- Derecha: Botón "Ctrl + k" y Caja borde naranja "kevin.me   Seguridad   v" -->
+    <div class="flex items-center gap-4">
+      <button
+        id="btnCtrlK"
+        type="button"
+        class="bg-white border border-gray-200 hover:border-[#f97316] rounded-md px-3 py-1.5 text-xs text-gray-500 flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
+        title="Abrir catálogo de 120 cédulas quemadas (Ctrl + K)"
+      >
+        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 103.5 10.5a7.5 7.5 0 0013.15 6.15z" />
         </svg>
-        <input
-          type="text"
-          placeholder="Buscar transacciones, cédulas o reglas..."
-          class="form-control w-full bg-slate-50/80 border border-slate-200 rounded-xl pl-10 pr-20 py-2 text-sm text-slate-700 placeholder-slate-400 focus:bg-white"
-        />
-        <span class="absolute right-2.5 text-[11px] text-slate-400 bg-white border border-slate-200 rounded-md px-2 py-0.5 font-mono shadow-2xs">
-          Ctrl + k
-        </span>
-      </div>
-    </div>
-
-    <!-- Derecha: Perfil Corporativo -->
-    <div class="flex items-center gap-3">
-      <button
-        type="button"
-        class="ui-transition border border-blue-200 bg-blue-50/50 hover:bg-blue-50 text-slate-700 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium flex items-center gap-2.5 shadow-2xs"
-      >
-        <span class="relative flex h-2.5 w-2.5">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-600"></span>
-        </span>
-        <span class="font-medium text-slate-800">kevin.me</span>
-        <span class="text-slate-300">|</span>
-        <span class="text-blue-700 font-semibold">Seguridad</span>
+        <span>Ctrl + k</span>
       </button>
+
+      <div class="border border-[#f97316] rounded-md px-5 py-1.5 bg-[#f7f3f0] flex items-center gap-7 text-xs text-[#f97316] font-medium">
+        <span>kevin.me</span>
+        <span>Seguridad</span>
+        <svg class="w-3.5 h-3.5 text-[#f97316]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
     </div>
   </header>
 
-  <!-- CONTENEDOR PRINCIPAL -->
-  <div class="flex flex-1 flex-col lg:flex-row">
+  <!-- ===================================================================== -->
+  <!-- CUERPO PRINCIPAL (Sidebar + Área Central)                             -->
+  <!-- ===================================================================== -->
+  <div class="flex flex-1 min-h-[calc(100vh-56px)]">
 
-    <!-- BARRA LATERAL (Sidebar) -->
-    <aside class="w-full lg:w-64 bg-white border-b lg:border-b-0 lg:border-r border-slate-200/80 flex flex-col justify-between shrink-0">
-      <nav class="p-4 lg:py-6 lg:px-3">
-        <p class="hidden lg:block px-3 mb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-          Menú Principal
-        </p>
-        <ul class="flex lg:flex-col gap-1.5 overflow-x-auto">
+    <!-- BARRA LATERAL (Sidebar) — Idéntica a las capturas -->
+    <aside
+      id="sidebar"
+      class="w-[220px] bg-white border-r border-gray-100 flex flex-col justify-between shrink-0 py-5 px-3"
+    >
+      <nav>
+        <ul class="space-y-2">
           <!-- Herramientas -->
-          <li class="shrink-0">
+          <li>
             <a
               href="#"
-              class="ui-transition flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100/80 hover:text-slate-900"
+              class="flex items-center gap-4 px-3.5 py-2.5 text-[12px] text-gray-600 hover:bg-gray-100 rounded-lg transition"
             >
-              <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <!-- Icono llave inglesa (wrench) -->
+              <svg class="w-5 h-5 text-gray-600 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z" />
               </svg>
               <span>Herramientas</span>
             </a>
           </li>
 
           <!-- Administración -->
-          <li class="shrink-0">
+          <li>
             <a
               href="#"
-              class="ui-transition flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100/80 hover:text-slate-900"
+              class="flex items-center gap-4 px-3.5 py-2.5 text-[12px] text-gray-600 hover:bg-gray-100 rounded-lg transition"
             >
-              <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+              <!-- Icono usuario -->
+              <svg class="w-5 h-5 text-gray-600 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
               </svg>
               <span>Administración</span>
             </a>
           </li>
 
-          <!-- Gestor de fraudes (ACTIVO) -->
-          <li class="shrink-0">
+          <!-- Gestor de fraudes (ACTIVO con anzuelo naranja) -->
+          <li>
             <a
               href="#"
-              class="ui-transition flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-blue-700 bg-blue-50/90 border-l-4 border-blue-600 shadow-2xs"
+              class="flex items-center gap-4 px-3.5 py-3 text-[12px] font-medium text-[#f97316] bg-[#e5e7eb] rounded-lg transition"
             >
-              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              <!-- Icono anzuelo naranja idéntico a la captura -->
+              <svg class="w-5 h-5 text-[#f97316] shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                <circle cx="12" cy="5" r="2" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 7v9a4 4 0 01-8 0v-2m0 0l2.5 2.5M4 14l-1.5 2.5" />
               </svg>
               <span>Gestor de fraudes</span>
             </a>
@@ -218,283 +183,904 @@
         </ul>
       </nav>
 
-      <!-- Botón Cerrar sesión abajo -->
-      <div class="hidden lg:block p-4 border-t border-slate-100">
+      <!-- Cerrar sesión abajo -->
+      <div class="pt-3 border-t border-gray-200">
         <button
           type="button"
-          class="ui-transition w-full flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-slate-500 hover:text-red-600 hover:bg-red-50/80 rounded-xl"
+          class="w-full flex items-center gap-3.5 px-3.5 py-2 text-[12px] text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          <svg class="w-5 h-5 text-gray-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
           </svg>
           <span>Cerrar sesión</span>
         </button>
       </div>
     </aside>
 
-    <!-- ÁREA CENTRAL -->
-    <main class="flex-1 p-4 sm:p-8 lg:p-10 overflow-y-auto">
-      <div class="max-w-6xl mx-auto space-y-8">
+    <!-- =================================================================== -->
+    <!-- ÁREA CENTRAL                                                        -->
+    <!-- =================================================================== -->
+    <main class="flex-1 bg-white px-6 sm:px-12 py-8 overflow-y-auto relative">
+      <div class="max-w-[1060px] mx-auto">
 
-        <!-- Encabezado de página -->
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-blue-50 border border-blue-200/60 text-blue-700 text-xs font-semibold mb-2">
-              <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
-              Motor de Reglas en Tiempo Real
+        <!-- TÍTULO PRINCIPAL (Se oculta o se mantiene arriba según estado) -->
+        <h1 id="tituloPrincipal" class="text-[26px] font-bold text-center text-gray-900 mb-6 tracking-tight">
+          Monitorea las <span class="text-[#f97316]">solicitudes</span> de crédito
+        </h1>
+
+        <!-- CAJA SUPERIOR DERECHA DE ESTADO / BIOMETRÍA / SIN INFORMACIÓN (Captura 2) -->
+        <div id="panelEstadoSuperior" class="hidden mb-6 flex justify-end">
+          <div class="sumas-card w-full lg:w-[540px] px-7 py-4">
+            <!-- Vista cuando es "Sin información" (Idéntica a Captura 2) -->
+            <div id="vistaSinInfo" class="hidden">
+              <div class="border-b border-gray-200 pb-2 mb-3 text-xs text-gray-400 flex justify-between">
+                <span>Validación de Centrales y Biometría</span>
+                <span id="lblCedulaSinInfo" class="font-mono"></span>
+              </div>
+              <div class="flex items-center justify-around py-2">
+                <span class="text-[#f97316] font-bold text-sm">Sin información</span>
+                <span class="w-6 h-6 rounded-full bg-red-600 text-white flex items-center justify-center text-xs font-bold shadow-xs">
+                  ✕
+                </span>
+              </div>
             </div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Módulo <span class="text-blue-600">Simulador Antifraude</span>
-            </h1>
-            <p class="text-sm text-slate-500 mt-1">
-              Evalúa transacciones de clientes cruzando biometría, historial crediticio, zonas de riesgo y matriz de confianza.
-            </p>
+
+            <!-- Vista cuando SÍ hay datos: Resumen Biometría, Centrales y Veredicto Motor -->
+            <div id="vistaConInfo" class="hidden">
+              <div class="flex items-center justify-between border-b border-gray-200 pb-2.5 mb-3">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold text-gray-700 uppercase tracking-wide">Motor Antifraude:</span>
+                  <span
+                    id="badgeVeredicto"
+                    class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-bold"
+                  >
+                    --
+                  </span>
+                </div>
+                <span id="badgeProceso" class="text-[11px] font-medium px-2.5 py-0.5 rounded bg-orange-50 text-[#f97316] border border-orange-200">
+                  monitoreo
+                </span>
+              </div>
+
+              <!-- Resumen rápido de Biometría y Reportes -->
+              <div class="grid grid-cols-3 gap-2 text-center text-xs mb-2.5">
+                <div class="bg-gray-50 rounded-lg p-2 border border-gray-100">
+                  <div class="text-[10px] text-gray-400 uppercase">Biometría</div>
+                  <div id="resumenBiometria" class="font-bold text-gray-800 mt-0.5">--</div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-2 border border-gray-100">
+                  <div class="text-[10px] text-gray-400 uppercase">Celular (Rep/Ent)</div>
+                  <div id="resumenCelular" class="font-bold text-gray-800 mt-0.5">--</div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-2 border border-gray-100">
+                  <div class="text-[10px] text-gray-400 uppercase">Correo (Rep/Ent)</div>
+                  <div id="resumenCorreo" class="font-bold text-gray-800 mt-0.5">--</div>
+                </div>
+              </div>
+
+              <p id="motivoVeredicto" class="text-xs text-gray-600 font-medium leading-relaxed"></p>
+              <div id="contenedorSenales" class="mt-1.5 flex flex-wrap gap-1"></div>
+            </div>
           </div>
         </div>
 
-        <!-- Tarjeta de Filtros -->
-        <section class="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-card">
-          <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
-            <div class="flex items-center gap-2.5">
-              <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                </svg>
-              </div>
-              <div>
-                <h2 class="text-base font-bold text-slate-800">Filtros de Búsqueda</h2>
-                <p class="text-xs text-slate-400">Configura los parámetros de la transacción a simular</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- 4 campos en línea -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
-            <!-- 1. Select Cédula -->
-            <div>
-              <label for="cedula" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
-                Cédula del Cliente
-              </label>
-              <select
-                id="cedula"
-                class="form-control w-full bg-slate-50/50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium text-slate-800 focus:bg-white"
-              >
-                <option value="1001001001">1001001001</option>
-                <option value="2002002002">2002002002</option>
-                <option value="3003003003">3003003003</option>
-                <option value="4004004004">4004004004</option>
-              </select>
-            </div>
-
-            <!-- 2. Input Number Monto -->
-            <div>
-              <label for="monto" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
-                Monto Transacción (COP)
-              </label>
-              <input
-                id="monto"
-                type="number"
-                value="1500000"
-                class="form-control w-full bg-slate-50/50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium text-slate-800 focus:bg-white"
-              />
-            </div>
-
-            <!-- 3. Input Text Ciudad Origen -->
-            <div>
-              <label for="ciudad" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
-                Ciudad Origen
-              </label>
-              <input
-                id="ciudad"
-                type="text"
-                value="Medellin"
-                class="form-control w-full bg-slate-50/50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium text-slate-800 focus:bg-white"
-              />
-            </div>
-
-            <!-- 4. Select Estado/Proceso -->
-            <div>
-              <label for="tipo" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
-                Estado / Proceso
-              </label>
-              <select
-                id="tipo"
-                class="form-control w-full bg-slate-50/50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium text-slate-800 focus:bg-white"
-              >
-                <option value="onboarding">onboarding</option>
-                <option value="monitoreo">monitoreo</option>
-                <option value="cambio_datos">cambio_datos</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Botones de Acción -->
-          <div class="flex items-center gap-3 pt-2">
+        <!-- =============================================================== -->
+        <!-- BARRA DE BÚSQUEDA PRINCIPAL (Documento + Buscar + Actualizar)   -->
+        <!-- =============================================================== -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-3">
+          <!-- Input Documento con etiqueta flotante y lupa -->
+          <div class="doc-input-wrapper flex-1">
+            <input
+              id="inputDocumento"
+              type="text"
+              placeholder=" "
+              autocomplete="off"
+              class="doc-input w-full h-[46px] border border-gray-500 focus:border-gray-800 rounded-[4px] pl-3.5 pr-10 text-sm text-gray-800 focus:outline-none"
+            />
+            <label for="inputDocumento" class="doc-floating-label">Documento</label>
             <button
-              id="btnFiltro"
+              id="btnLupaInput"
               type="button"
-              class="btn-primary flex-1 text-white font-semibold py-3 px-6 rounded-xl text-sm flex items-center justify-center gap-2 cursor-pointer"
+              title="Ver lista de cédulas de prueba"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-700 hover:text-[#f97316] focus:outline-none"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 103.5 10.5a7.5 7.5 0 0013.15 6.15z" />
               </svg>
-              <span>Filtro</span>
             </button>
+          </div>
+
+          <!-- Botón Buscar -->
+          <button
+            id="btnBuscar"
+            type="button"
+            class="sumas-btn-outline h-[46px] px-5 text-sm font-normal shrink-0 cursor-pointer"
+          >
+            Buscar
+          </button>
+
+          <!-- Botón Actualizar datos -->
+          <button
+            id="btnActualizarDatos"
+            type="button"
+            class="sumas-btn-outline h-[46px] px-5 text-sm font-normal shrink-0 cursor-pointer"
+          >
+            Actualizar datos
+          </button>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- SELECTOR RÁPIDO DE LOS 120 CASOS QUEMADOS (Para probar con 1 clic) -->
+        <!-- =============================================================== -->
+        <div class="bg-[#fafafa] border border-gray-200 rounded-xl p-3.5 mb-8">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-[#f97316]"></span>
+              <span class="text-xs font-bold text-gray-700">
+                Base de Pruebas Quemada (<span id="contadorCasos">120</span> Cédulas listas):
+              </span>
+              <span class="text-[11px] text-gray-500 hidden md:inline">
+                Selecciona cualquier caso o simplemente dale clic en <b>Buscar</b>
+              </span>
+            </div>
+
+            <!-- Filtros por tipo de caso -->
+            <div class="flex flex-wrap items-center gap-1.5" id="filtrosCategoria">
+              <button type="button" data-cat="TODOS" class="cat-pill px-2.5 py-1 rounded-md text-[11px] font-medium bg-[#f97316] text-white">
+                Todos (120)
+              </button>
+              <button type="button" data-cat="POSITIVO" class="cat-pill px-2.5 py-1 rounded-md text-[11px] font-medium bg-white border border-gray-200 text-gray-600 hover:border-[#f97316]">
+                ✅ Positivos
+              </button>
+              <button type="button" data-cat="MALO" class="cat-pill px-2.5 py-1 rounded-md text-[11px] font-medium bg-white border border-gray-200 text-gray-600 hover:border-[#f97316]">
+                🚫 Malos / Bloqueo
+              </button>
+              <button type="button" data-cat="DUDOSO" class="cat-pill px-2.5 py-1 rounded-md text-[11px] font-medium bg-white border border-gray-200 text-gray-600 hover:border-[#f97316]">
+                ⚠️ Dudosos / Alerta
+              </button>
+              <button type="button" data-cat="CAMBIO_DATOS" class="cat-pill px-2.5 py-1 rounded-md text-[11px] font-medium bg-white border border-gray-200 text-gray-600 hover:border-[#f97316]">
+                🔄 Cambio Datos
+              </button>
+              <button type="button" data-cat="SIN_INFO" class="cat-pill px-2.5 py-1 rounded-md text-[11px] font-medium bg-white border border-gray-200 text-gray-600 hover:border-[#f97316]">
+                ❌ Sin Info
+              </button>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+            <select
+              id="selectCasoQuemado"
+              class="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-2 text-xs text-gray-700 focus:outline-none focus:border-[#f97316]"
+            >
+              <option value="">Cargando 120 casos quemados...</option>
+            </select>
 
             <button
-              id="btnRefrescar"
+              id="btnCasoAleatorio"
               type="button"
-              title="Refrescar formulario"
-              class="btn-secondary w-11 h-11 bg-white hover:bg-slate-50 border border-slate-300 rounded-xl flex items-center justify-center text-slate-600 hover:text-slate-900 shrink-0 cursor-pointer"
+              class="px-3.5 py-2 rounded-lg text-xs font-medium bg-orange-50 text-[#f97316] border border-orange-200 hover:bg-orange-100 transition shrink-0 cursor-pointer"
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
+              🎲 Siguiente caso de prueba
             </button>
           </div>
-        </section>
+        </div>
 
-        <!-- PANELES DE RESULTADO (Ocultos por defecto) -->
-        <section id="panelesResultado" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <!-- Tarjeta Izquierda: Datos de SumasParaTi -->
-          <div class="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-7 shadow-card flex flex-col">
-            <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
-              <div class="flex items-center gap-2.5">
-                <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
-                <h3 class="text-base font-bold text-slate-800">
-                  Datos de SumasParaTi
-                </h3>
+        <!-- =============================================================== -->
+        <!-- CONTENEDOR DE TABLAS DE RESULTADO (Idéntico a Capturas 2 y 3)   -->
+        <!-- =============================================================== -->
+        <div id="contenedorResultados" class="hidden space-y-6 pb-12">
+
+          <!-- 1. TARJETA: Información del cliente (Captura 2) -->
+          <section class="sumas-card px-6 py-7">
+            <h2 class="text-center font-bold text-[15px] text-gray-900 mb-6">
+              Información del cliente
+            </h2>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-gray-200 text-[13px] font-bold text-gray-900">
+                    <th class="pb-3 px-3 text-center">Cédula</th>
+                    <th class="pb-3 px-3 text-center">Vinculación</th>
+                    <th class="pb-3 px-3 text-center">Nombre</th>
+                    <th class="pb-3 px-3 text-center">Celular</th>
+                    <th class="pb-3 px-3 text-center">Correo electrónico</th>
+                    <th class="pb-3 px-3 text-center">Ciudad/Departamento</th>
+                    <th class="pb-3 px-3 text-center">Motivo de bloqueo</th>
+                  </tr>
+                </thead>
+                <tbody id="tbodyInfoCliente" class="text-[13px] text-gray-700">
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- 2. TARJETA: Información cambio de datos sensibles (Captura 3) -->
+          <section class="sumas-card px-6 py-7">
+            <h2 class="text-center font-bold text-[15px] text-gray-900 mb-6">
+              Información cambio de datos sensibles
+            </h2>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-gray-200 text-[13px] font-bold text-gray-900">
+                    <th class="pb-3 px-3 text-center">Fecha de cambio</th>
+                    <th class="pb-3 px-3 text-center">Celular anterior</th>
+                    <th class="pb-3 px-3 text-center">Celular nuevo</th>
+                    <th class="pb-3 px-3 text-center">Correo electrónico anterior</th>
+                    <th class="pb-3 px-3 text-center">Correo electrónico nuevo</th>
+                  </tr>
+                </thead>
+                <tbody id="tbodyCambioDatos" class="text-[13px] text-gray-700">
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- 3. TARJETA: Información de Historia del Consumo (Captura 3) -->
+          <section class="sumas-card px-6 py-7">
+            <h2 class="text-center font-bold text-[15px] text-gray-900 mb-6">
+              Información de Historia del Consumo
+            </h2>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-gray-200 text-[13px] font-bold text-gray-900">
+                    <th class="pb-3 px-3 text-center">Estado Crédito</th>
+                    <th class="pb-3 px-3 text-center">Estado de bloqueo</th>
+                    <th class="pb-3 px-3 text-center">Cupo consumido</th>
+                    <th class="pb-3 px-3 text-center">Balance de Crédito</th>
+                    <th class="pb-3 px-3 text-center">Cantidad pagada</th>
+                    <th class="pb-3 px-3 text-center">Fecha Compra</th>
+                    <th class="pb-3 px-3 text-center">Tienda</th>
+                  </tr>
+                </thead>
+                <tbody id="tbodyHistoriaConsumo" class="text-[13px] text-gray-700">
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- 4. TARJETA: Confirmación + Observaciones + Bloqueo preventivo (Captura 3) -->
+          <section class="sumas-card px-6 py-7">
+            <div class="flex flex-col sm:flex-row items-stretch">
+              <!-- Select Confirmación -->
+              <div class="relative sm:w-1/2">
+                <select
+                  id="selectConfirmacion"
+                  class="w-full h-[48px] border border-gray-400 sm:rounded-l-[4px] rounded-t-[4px] sm:rounded-tr-none px-4 text-sm text-gray-700 bg-white focus:outline-none focus:border-gray-700 appearance-none"
+                >
+                  <option value="">Confirmación</option>
+                  <option value="PASA">PASA — Aprobar solicitud de crédito</option>
+                  <option value="BLOQUEA">BLOQUEA — Bloqueo preventivo por fraude / datos</option>
+                  <option value="ALERTA_HUMANA">ALERTA_HUMANA — Escalar a revisión manual</option>
+                </select>
+                <svg class="w-4 h-4 text-gray-500 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
               </div>
-              <span class="text-[11px] font-mono font-medium text-slate-400 bg-slate-100 px-2.5 py-0.5 rounded-md">
-                JSON Payload
-              </span>
-            </div>
-            <pre
-              id="jsonSumas"
-              class="bg-slate-900 text-slate-100 border border-slate-800 rounded-xl p-4 text-xs font-mono leading-relaxed overflow-x-auto flex-1 max-h-96 shadow-inner"
-            ></pre>
-          </div>
 
-          <!-- Tarjeta Derecha: Veredicto Motor Antifraude -->
-          <div class="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-7 shadow-card flex flex-col">
-            <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
-              <div class="flex items-center gap-2.5">
-                <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
-                <h3 class="text-base font-bold text-slate-800">
-                  Veredicto Motor Antifraude
-                </h3>
+              <!-- Input Observaciones -->
+              <div class="sm:w-1/2">
+                <input
+                  id="inputObservaciones"
+                  type="text"
+                  placeholder="Observaciones"
+                  class="w-full h-[48px] border border-t-0 sm:border-t sm:border-l-0 border-gray-400 sm:rounded-r-[4px] rounded-b-[4px] sm:rounded-bl-none px-4 text-sm text-gray-700 focus:outline-none focus:border-gray-700"
+                />
               </div>
-              <span class="text-[11px] font-medium text-slate-400 bg-slate-100 px-2.5 py-0.5 rounded-md">
-                Decisión Automática
+            </div>
+
+            <!-- Botón ancho "Bloqueo preventivo" -->
+            <button
+              id="btnBloqueoPreventivo"
+              type="button"
+              class="sumas-btn-outline w-full h-[40px] mt-6 text-sm font-normal cursor-pointer"
+            >
+              Bloqueo preventivo
+            </button>
+
+            <!-- Mensaje de confirmación al guardar -->
+            <p id="msgActualizacion" class="hidden text-center text-xs font-medium mt-3"></p>
+          </section>
+
+          <!-- 5. TARJETA TÉCNICA: Detalle de Informes (Centrales, Biometría, Alerta y JSON) -->
+          <section class="sumas-card px-6 py-6">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="font-bold text-[14px] text-gray-800">
+                Detalle de Informes en Centrales, Biometría y Simulación de Reglas (`AlertaDto`)
+              </h2>
+              <span id="etiquetaCasoActual" class="text-xs font-medium text-[#f97316] bg-orange-50 px-3 py-1 rounded-full border border-orange-200">
               </span>
             </div>
 
-            <div class="flex-1 flex flex-col items-center justify-center text-center py-10 px-6 bg-slate-50/60 rounded-xl border border-slate-100">
-              <span
-                id="badgeVeredicto"
-                class="inline-block text-2xl font-extrabold tracking-wider px-8 py-3 rounded-full mb-4 shadow-xs"
-              >
-                --
-              </span>
-              <p id="motivoVeredicto" class="text-sm text-slate-600 max-w-md font-medium leading-relaxed"></p>
+            <!-- Controles rápidos para re-simular cambiando monto, ciudad o proceso sobre el mismo cliente -->
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 mb-4 bg-gray-50 p-3.5 rounded-xl border border-gray-200">
+              <div>
+                <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1">Proceso (`tipo`)</label>
+                <select id="simTipo" class="w-full bg-white border border-gray-300 rounded px-2.5 py-1.5 text-xs">
+                  <option value="monitoreo">monitoreo</option>
+                  <option value="onboarding">onboarding</option>
+                  <option value="cambio_datos">cambio_datos</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1">Monto compra (COP)</label>
+                <input id="simMonto" type="number" class="w-full bg-white border border-gray-300 rounded px-2.5 py-1.5 text-xs" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1">Ciudad Origen Compra</label>
+                <input id="simCiudad" type="text" class="w-full bg-white border border-gray-300 rounded px-2.5 py-1.5 text-xs" />
+              </div>
+              <div class="flex items-end">
+                <button
+                  id="btnReevaluar"
+                  type="button"
+                  class="sumas-btn-outline w-full py-1.5 text-xs font-medium cursor-pointer"
+                >
+                  Re-evaluar Motor Antifraude
+                </button>
+              </div>
             </div>
-          </div>
-        </section>
 
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div>
+                <div class="text-xs font-bold text-gray-500 mb-1.5">Datos quemados del cliente (`/sumas/cliente/:cedula`)</div>
+                <pre id="jsonSumas" class="bg-gray-900 text-gray-100 rounded-xl p-3.5 text-[11px] font-mono overflow-x-auto max-h-64"></pre>
+              </div>
+              <div>
+                <div class="text-xs font-bold text-gray-500 mb-1.5">Respuesta del motor (`/decision/:tipo`)</div>
+                <pre id="jsonDecision" class="bg-gray-900 text-gray-100 rounded-xl p-3.5 text-[11px] font-mono overflow-x-auto max-h-64"></pre>
+              </div>
+            </div>
+          </section>
+
+        </div>
       </div>
     </main>
   </div>
 
-  <!-- LÓGICA JAVASCRIPT INTACTA -->
+  <!-- Widget flotante inferior derecho (como en las capturas) -->
+  <div class="fixed bottom-3 right-3 bg-white border border-gray-200 shadow-md rounded-md p-2 flex flex-col items-center justify-center w-12 h-12 pointer-events-none opacity-90">
+    <svg class="w-6 h-6 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2a10 10 0 1010 10A10 10 0 0012 2zm1 14.93V14h-2v2.93A8 8 0 014.07 13H7v-2H4.07A8 8 0 0111 4.07V7h2V4.07A8 8 0 0119.93 11H17v2h2.93A8 8 0 0113 16.93z" />
+    </svg>
+    <span class="text-[7px] text-gray-400 leading-none mt-0.5">Privacy</span>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL CATÁLOGO DE 120 CÉDULAS (Se abre con Ctrl + K o clic en la lupa) -->
+  <!-- ===================================================================== -->
+  <div
+    id="modalCatalogo"
+    class="hidden fixed inset-0 bg-black/40 z-50 flex items-start justify-center pt-16 px-4"
+  >
+    <div class="bg-white border border-[#f97316] rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden">
+      <div class="px-5 py-4 border-b border-gray-200 flex items-center justify-between bg-[#fafafa]">
+        <div>
+          <h3 class="font-bold text-sm text-gray-900">Catálogo de 120 Cédulas Quemadas para Pruebas</h3>
+          <p class="text-xs text-gray-500">Haz clic en cualquier cliente para cargarlo y evaluarlo automáticamente</p>
+        </div>
+        <button id="btnCerrarModal" type="button" class="text-gray-400 hover:text-gray-700 text-lg font-bold px-2">
+          ✕
+        </button>
+      </div>
+      <div class="p-4 border-b border-gray-100">
+        <input
+          id="inputFiltroModal"
+          type="text"
+          placeholder="Filtrar por cédula, nombre, ciudad o caso (ej: 0-0, Unicus, Veriff, Cartagena, Positivo)..."
+          class="w-full border border-gray-300 rounded-lg px-3.5 py-2 text-xs focus:outline-none focus:border-[#f97316]"
+        />
+      </div>
+      <div id="listaModalCasos" class="max-h-[380px] overflow-y-auto divide-y divide-gray-100"></div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- LÓGICA JAVASCRIPT                                                     -->
+  <!-- ===================================================================== -->
   <script>
-    const btnFiltro = document.getElementById('btnFiltro');
-    const btnRefrescar = document.getElementById('btnRefrescar');
-    const panelesResultado = document.getElementById('panelesResultado');
-    const jsonSumas = document.getElementById('jsonSumas');
+    let catalogoClientes = [];
+    let categoriaActual = 'TODOS';
+    let clienteActual = null;
+    let ultimoResultadoMotor = null;
+    let indiceRotacion = 0;
+
+    // Elementos del DOM
+    const inputDocumento = document.getElementById('inputDocumento');
+    const btnBuscar = document.getElementById('btnBuscar');
+    const btnActualizarDatos = document.getElementById('btnActualizarDatos');
+    const selectCasoQuemado = document.getElementById('selectCasoQuemado');
+    const btnCasoAleatorio = document.getElementById('btnCasoAleatorio');
+    const contadorCasos = document.getElementById('contadorCasos');
+
+    const panelEstadoSuperior = document.getElementById('panelEstadoSuperior');
+    const vistaSinInfo = document.getElementById('vistaSinInfo');
+    const vistaConInfo = document.getElementById('vistaConInfo');
+    const lblCedulaSinInfo = document.getElementById('lblCedulaSinInfo');
+
     const badgeVeredicto = document.getElementById('badgeVeredicto');
+    const badgeProceso = document.getElementById('badgeProceso');
+    const resumenBiometria = document.getElementById('resumenBiometria');
+    const resumenCelular = document.getElementById('resumenCelular');
+    const resumenCorreo = document.getElementById('resumenCorreo');
     const motivoVeredicto = document.getElementById('motivoVeredicto');
+    const contenedorSenales = document.getElementById('contenedorSenales');
 
-    btnFiltro.addEventListener('click', async () => {
-      const cedula = document.getElementById('cedula').value;
-      const monto = Number(document.getElementById('monto').value);
-      const ciudad = document.getElementById('ciudad').value;
-      const tipo = document.getElementById('tipo').value;
+    const contenedorResultados = document.getElementById('contenedorResultados');
+    const tbodyInfoCliente = document.getElementById('tbodyInfoCliente');
+    const tbodyCambioDatos = document.getElementById('tbodyCambioDatos');
+    const tbodyHistoriaConsumo = document.getElementById('tbodyHistoriaConsumo');
 
-      panelesResultado.classList.remove('hidden');
-      jsonSumas.textContent = 'Cargando datos del cliente...';
-      badgeVeredicto.textContent = '...';
-      badgeVeredicto.className =
-        'inline-block text-2xl font-extrabold tracking-wider px-8 py-3 rounded-full mb-4 bg-gray-100 text-gray-600';
-      motivoVeredicto.textContent = 'Evaluando reglas antifraude...';
+    const selectConfirmacion = document.getElementById('selectConfirmacion');
+    const inputObservaciones = document.getElementById('inputObservaciones');
+    const btnBloqueoPreventivo = document.getElementById('btnBloqueoPreventivo');
+    const msgActualizacion = document.getElementById('msgActualizacion');
+
+    const simTipo = document.getElementById('simTipo');
+    const simMonto = document.getElementById('simMonto');
+    const simCiudad = document.getElementById('simCiudad');
+    const btnReevaluar = document.getElementById('btnReevaluar');
+    const etiquetaCasoActual = document.getElementById('etiquetaCasoActual');
+    const jsonSumas = document.getElementById('jsonSumas');
+    const jsonDecision = document.getElementById('jsonDecision');
+
+    const modalCatalogo = document.getElementById('modalCatalogo');
+    const btnCtrlK = document.getElementById('btnCtrlK');
+    const btnLupaInput = document.getElementById('btnLupaInput');
+    const btnCerrarModal = document.getElementById('btnCerrarModal');
+    const inputFiltroModal = document.getElementById('inputFiltroModal');
+    const listaModalCasos = document.getElementById('listaModalCasos');
+
+    // 1. Cargar los 120 casos quemados al iniciar la página
+    async function cargarCatalogo() {
+      try {
+        const res = await fetch('/sumas/clientes');
+        catalogoClientes = await res.json();
+        contadorCasos.textContent = catalogoClientes.length;
+        renderizarSelectorCasos();
+        renderizarListaModal('');
+      } catch (err) {
+        console.error('Error cargando catálogo de clientes:', err);
+      }
+    }
+
+    function obtenerClientesFiltrados() {
+      if (categoriaActual === 'TODOS') return catalogoClientes;
+      return catalogoClientes.filter((c) => c.categoria === categoriaActual);
+    }
+
+    function iconoCategoria(cat) {
+      if (cat === 'POSITIVO') return '✅';
+      if (cat === 'MALO') return '🚫';
+      if (cat === 'DUDOSO') return '⚠️';
+      if (cat === 'CAMBIO_DATOS') return '🔄';
+      return '❌';
+    }
+
+    function renderizarSelectorCasos() {
+      const lista = obtenerClientesFiltrados();
+      selectCasoQuemado.innerHTML = lista
+        .map(
+          (c) =>
+            `<option value="${c.cedula}">${iconoCategoria(c.categoria)} [${c.cedula}] ${c.nombre} — ${c.etiquetaCaso}</option>`
+        )
+        .join('');
+
+      // Si el input Documento está vacío, dejamos preseleccionada la primera cédula para que darle a "Buscar" funcione sin escribir nada
+      if (!inputDocumento.value && lista.length > 0) {
+        inputDocumento.value = lista[0].cedula;
+      }
+    }
+
+    // 2. Ejecutar búsqueda de cliente y evaluación automática en el motor antifraude
+    async function buscarYSimular(cedulaParam) {
+      let cedula = (cedulaParam ?? inputDocumento.value ?? '').trim();
+
+      // Si el usuario no escribió nada y le dio a "Buscar", tomamos el caso seleccionado o el siguiente de la lista
+      if (!cedula) {
+        const lista = obtenerClientesFiltrados();
+        const elegido = selectCasoQuemado.value || (lista[0] && lista[0].cedula) || '1001001001';
+        cedula = elegido;
+        inputDocumento.value = cedula;
+      }
+
+      msgActualizacion.classList.add('hidden');
 
       try {
-        // A) Fetch GET a http://localhost:3000/sumas/cliente/{cedula}
-        const resSumas = await fetch(`http://localhost:3000/sumas/cliente/${cedula}`);
+        // A) Consultar datos del cliente en SumasParaTi
+        const resSumas = await fetch(`/sumas/cliente/${encodeURIComponent(cedula)}`);
         const datos = await resSumas.json();
+        clienteActual = datos;
 
-        // Mostrar JSON en la Tarjeta Izquierda
-        jsonSumas.textContent = JSON.stringify(datos, null, 2);
-
-        // B) Construir objeto JSON para el antifraude
-        const payload = {
-          alerta: {
-            transactionId: 'TXN-123',
-            tienda: 'Simulador',
-            monto: monto,
-            tipo: tipo,
-            ciudadOrigen: ciudad,
-          },
-          datos: {
-            celular: datos.celular,
-            correo: datos.correo,
-            direccion: datos.direccion,
-          },
-          biometria: datos.biometria,
-          historial: datos.historial,
-          ciudadesFrecuentes: datos.ciudadesFrecuentes,
-        };
-
-        // C) Fetch POST a http://localhost:3000/decision/{tipo}
-        const resDecision = await fetch(`http://localhost:3000/decision/${tipo}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-        const resultado = await resDecision.json();
-
-        // D) Mostrar la decisión (PASA/BLOQUEA) y el motivo en la Tarjeta Derecha
-        const rawDecision = String(resultado.decision || resultado.veredicto || '').toUpperCase();
-        const pasa = rawDecision === 'PASA';
-
-        if (pasa) {
-          badgeVeredicto.textContent = 'PASA';
-          badgeVeredicto.className =
-            'inline-block text-2xl font-extrabold tracking-wider px-8 py-3 rounded-full mb-4 bg-green-100 text-green-700 border border-green-300';
-        } else {
-          badgeVeredicto.textContent = 'BLOQUEA';
-          badgeVeredicto.className =
-            'inline-block text-2xl font-extrabold tracking-wider px-8 py-3 rounded-full mb-4 bg-red-100 text-red-700 border border-red-300';
+        // Sincronizar selector si existe en el catálogo
+        if (catalogoClientes.some((c) => c.cedula === datos.cedula)) {
+          selectCasoQuemado.value = datos.cedula;
         }
 
-        motivoVeredicto.textContent = resultado.motivo || 'Sin motivo especificado.';
-      } catch (error) {
-        badgeVeredicto.textContent = 'BLOQUEA';
-        badgeVeredicto.className =
-          'inline-block text-2xl font-extrabold tracking-wider px-8 py-3 rounded-full mb-4 bg-red-100 text-red-700 border border-red-300';
-        motivoVeredicto.textContent = 'Error al conectar con el servidor: ' + error.message;
+        // Llenar controles de simulación
+        simTipo.value = datos.alerta?.tipo || 'monitoreo';
+        simMonto.value = datos.alerta?.monto ?? 350000;
+        simCiudad.value = datos.alerta?.ciudadOrigen || 'Medellin';
+        etiquetaCasoActual.textContent = datos.etiquetaCaso || 'Caso personalizado';
+
+        // Mostrar JSON quemado
+        jsonSumas.textContent = JSON.stringify(datos, null, 2);
+
+        // Evaluar en el motor antifraude
+        await evaluarEnMotor(datos, simTipo.value, Number(simMonto.value), simCiudad.value);
+      } catch (err) {
+        console.error('Error al buscar cliente:', err);
+      }
+    }
+
+    async function evaluarEnMotor(datos, tipoProceso, monto, ciudadOrigen) {
+      const payload = {
+        alerta: {
+          transactionId: datos.alerta?.transactionId || 'TXN-123',
+          tienda: datos.alerta?.tienda || 'Simulador',
+          monto: monto,
+          tipo: tipoProceso,
+          ciudadOrigen: ciudadOrigen,
+        },
+        datos: {
+          celular: datos.celular,
+          correo: datos.correo,
+          direccion: datos.direccion,
+        },
+        biometria: datos.biometria,
+        historial: datos.historial,
+        ciudadesFrecuentes: datos.ciudadesFrecuentes,
+      };
+
+      const resDecision = await fetch(`/decision/${encodeURIComponent(tipoProceso)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const resultado = await resDecision.json();
+      ultimoResultadoMotor = resultado;
+
+      jsonDecision.textContent = JSON.stringify(resultado, null, 2);
+
+      // Renderizar toda la interfaz como en las capturas 2 y 3
+      renderizarVistaResultados(datos, resultado, tipoProceso);
+    }
+
+    function renderizarVistaResultados(datos, resultado, tipoProceso) {
+      panelEstadoSuperior.classList.remove('hidden');
+      contenedorResultados.classList.remove('hidden');
+
+      // 1. Caja superior derecha (Captura 2: "Sin información" vs Resumen con veredicto)
+      if (datos.sinInformacion) {
+        vistaSinInfo.classList.remove('hidden');
+        vistaConInfo.classList.add('hidden');
+        lblCedulaSinInfo.textContent = `Doc: ${datos.cedula}`;
+      } else {
+        vistaSinInfo.classList.add('hidden');
+        vistaConInfo.classList.remove('hidden');
+
+        const dec = String(resultado.decision || '').toUpperCase();
+        badgeVeredicto.textContent = dec;
+        if (dec === 'PASA') {
+          badgeVeredicto.className =
+            'inline-flex items-center px-3 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700 border border-green-300';
+        } else if (dec === 'ALERTA_HUMANA') {
+          badgeVeredicto.className =
+            'inline-flex items-center px-3 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300';
+        } else {
+          badgeVeredicto.className =
+            'inline-flex items-center px-3 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-300';
+        }
+
+        badgeProceso.textContent = `Proceso: ${tipoProceso}`;
+
+        // Resumen Biometría y Centrales
+        const bio = datos.biometria || {};
+        if (!bio.disponible) {
+          resumenBiometria.textContent = 'Sin biometría';
+        } else if (bio.proveedor === 'unicus') {
+          resumenBiometria.textContent = `Unicus Nivel ${bio.nivelUnicus ?? 0}`;
+        } else {
+          resumenBiometria.textContent = `Veriff (${bio.estado || 'N/A'})`;
+        }
+
+        resumenCelular.textContent = `${datos.celular?.reportes ?? 0} rep / ${datos.celular?.entidades ?? 0} ent`;
+        resumenCorreo.textContent = `${datos.correo?.reportes ?? 0} rep / ${datos.correo?.entidades ?? 0} ent`;
+        motivoVeredicto.textContent = resultado.motivo || '';
+
+        const senales = Array.isArray(resultado.senales) ? resultado.senales : [];
+        contenedorSenales.innerHTML = senales
+          .map(
+            (s) =>
+              `<span class="text-[10px] bg-orange-50 text-[#f97316] border border-orange-200 px-2 py-0.5 rounded">${s}</span>`
+          )
+          .join('');
+      }
+
+      // 2. Tabla 1: Información del cliente
+      if (datos.sinInformacion) {
+        tbodyInfoCliente.innerHTML = `
+          <tr>
+            <td colspan="7" class="py-6 text-center text-gray-400 text-xs">
+              No se encontró información registrada para el documento <b>${datos.cedula}</b>.
+            </td>
+          </tr>
+        `;
+      } else {
+        const motivoTabla =
+          resultado.decision === 'PASA'
+            ? 'Sin bloqueo (PASA)'
+            : `${resultado.decision}: ${resultado.motivo}`;
+
+        tbodyInfoCliente.innerHTML = `
+          <tr class="border-b border-gray-100 hover:bg-orange-50/30">
+            <td class="py-3.5 px-3 text-center font-medium text-gray-900">${datos.cedula}</td>
+            <td class="py-3.5 px-3 text-center">${datos.vinculacion}</td>
+            <td class="py-3.5 px-3 text-center font-medium text-gray-800">${datos.nombre}</td>
+            <td class="py-3.5 px-3 text-center">
+              <div>${datos.celularTexto}</div>
+              <span class="text-[11px] text-gray-400">(${datos.celular.reportes} rep / ${datos.celular.entidades} ent)</span>
+            </td>
+            <td class="py-3.5 px-3 text-center">
+              <div>${datos.correoTexto}</div>
+              <span class="text-[11px] text-gray-400">(${datos.correo.reportes} rep / ${datos.correo.entidades} ent)</span>
+            </td>
+            <td class="py-3.5 px-3 text-center">${datos.ciudadDepartamento}</td>
+            <td class="py-3.5 px-3 text-center">
+              <span class="inline-block px-2.5 py-1 rounded text-xs font-medium ${
+                resultado.decision === 'PASA'
+                  ? 'bg-green-50 text-green-700'
+                  : resultado.decision === 'ALERTA_HUMANA'
+                  ? 'bg-amber-50 text-amber-800'
+                  : 'bg-red-50 text-red-700'
+              }">
+                ${motivoTabla}
+              </span>
+            </td>
+          </tr>
+        `;
+      }
+
+      // 3. Tabla 2: Información cambio de datos sensibles
+      const cambios = Array.isArray(datos.cambiosDatosSensibles) ? datos.cambiosDatosSensibles : [];
+      if (cambios.length === 0) {
+        tbodyCambioDatos.innerHTML = `
+          <tr>
+            <td colspan="5" class="py-5 text-center text-gray-400 text-xs">
+              Sin cambios recientes de datos sensibles registrados.
+            </td>
+          </tr>
+        `;
+      } else {
+        tbodyCambioDatos.innerHTML = cambios
+          .map(
+            (c) => `
+            <tr class="border-b border-gray-100 hover:bg-orange-50/30">
+              <td class="py-3.5 px-3 text-center">${c.fechaCambio}</td>
+              <td class="py-3.5 px-3 text-center text-gray-500">${c.celularAnterior}</td>
+              <td class="py-3.5 px-3 text-center font-medium text-[#f97316]">${c.celularNuevo}</td>
+              <td class="py-3.5 px-3 text-center text-gray-500">${c.correoAnterior}</td>
+              <td class="py-3.5 px-3 text-center font-medium text-[#f97316]">${c.correoNuevo}</td>
+            </tr>
+          `
+          )
+          .join('');
+      }
+
+      // 4. Tabla 3: Información de Historia del Consumo
+      const consumos = Array.isArray(datos.historiaConsumo) ? datos.historiaConsumo : [];
+      if (consumos.length === 0) {
+        tbodyHistoriaConsumo.innerHTML = `
+          <tr>
+            <td colspan="7" class="py-5 text-center text-gray-400 text-xs">
+              Sin historial de consumo registrado.
+            </td>
+          </tr>
+        `;
+      } else {
+        tbodyHistoriaConsumo.innerHTML = consumos
+          .map(
+            (h) => `
+            <tr class="border-b border-gray-100 hover:bg-orange-50/30">
+              <td class="py-3.5 px-3 text-center font-medium">${h.estadoCredito}</td>
+              <td class="py-3.5 px-3 text-center">${h.estadoBloqueo}</td>
+              <td class="py-3.5 px-3 text-center font-medium text-gray-900">${h.cupoConsumido}</td>
+              <td class="py-3.5 px-3 text-center">${h.balanceCredito}</td>
+              <td class="py-3.5 px-3 text-center">${h.cantidadPagada}</td>
+              <td class="py-3.5 px-3 text-center">${h.fechaCompra}</td>
+              <td class="py-3.5 px-3 text-center font-medium text-[#f97316]">${h.tienda}</td>
+            </tr>
+          `
+          )
+          .join('');
+      }
+
+      // 5. Pre-llenar Confirmación y Observaciones con el veredicto del motor
+      selectConfirmacion.value = resultado.decision || 'BLOQUEA';
+      inputObservaciones.value = resultado.motivo || '';
+    }
+
+    // Eventos principales
+    btnBuscar.addEventListener('click', () => {
+      buscarYSimular(inputDocumento.value);
+    });
+
+    inputDocumento.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        buscarYSimular(inputDocumento.value);
       }
     });
 
-    btnRefrescar.addEventListener('click', () => {
-      document.getElementById('cedula').value = '1001001001';
-      document.getElementById('monto').value = '1500000';
-      document.getElementById('ciudad').value = 'Medellin';
-      document.getElementById('tipo').value = 'onboarding';
-      panelesResultado.classList.add('hidden');
-      jsonSumas.textContent = '';
-      badgeVeredicto.textContent = '--';
-      motivoVeredicto.textContent = '';
+    // Al cambiar el select de los 120 casos quemados, carga y busca inmediatamente sin hacer nada más
+    selectCasoQuemado.addEventListener('change', () => {
+      if (selectCasoQuemado.value) {
+        inputDocumento.value = selectCasoQuemado.value;
+        buscarYSimular(selectCasoQuemado.value);
+      }
     });
+
+    // Botón "Siguiente caso de prueba"
+    btnCasoAleatorio.addEventListener('click', () => {
+      const lista = obtenerClientesFiltrados();
+      if (lista.length === 0) return;
+      indiceRotacion = (indiceRotacion + 1) % lista.length;
+      const caso = lista[indiceRotacion];
+      inputDocumento.value = caso.cedula;
+      selectCasoQuemado.value = caso.cedula;
+      buscarYSimular(caso.cedula);
+    });
+
+    // Botón "Actualizar datos"
+    btnActualizarDatos.addEventListener('click', () => {
+      if (inputDocumento.value.trim()) {
+        buscarYSimular(inputDocumento.value.trim());
+      } else {
+        btnCasoAleatorio.click();
+      }
+    });
+
+    // Filtros de categoría (Todos, Positivos, Malos, Dudosos, Cambio Datos, Sin Info)
+    document.querySelectorAll('.cat-pill').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        categoriaActual = btn.getAttribute('data-cat') || 'TODOS';
+        document.querySelectorAll('.cat-pill').forEach((b) => {
+          b.className =
+            'cat-pill px-2.5 py-1 rounded-md text-[11px] font-medium bg-white border border-gray-200 text-gray-600 hover:border-[#f97316]';
+        });
+        btn.className =
+          'cat-pill px-2.5 py-1 rounded-md text-[11px] font-medium bg-[#f97316] text-white';
+
+        indiceRotacion = 0;
+        renderizarSelectorCasos();
+        const lista = obtenerClientesFiltrados();
+        if (lista.length > 0) {
+          inputDocumento.value = lista[0].cedula;
+          buscarYSimular(lista[0].cedula);
+        }
+      });
+    });
+
+    // Re-evaluar cambiando monto, ciudad o proceso manualmente
+    btnReevaluar.addEventListener('click', async () => {
+      if (!clienteActual) return;
+      await evaluarEnMotor(
+        clienteActual,
+        simTipo.value,
+        Number(simMonto.value),
+        simCiudad.value
+      );
+    });
+
+    // Botón "Bloqueo preventivo" -> Envía a POST /sumas/actualizar-estado
+    btnBloqueoPreventivo.addEventListener('click', async () => {
+      if (!clienteActual) return;
+      const decision = selectConfirmacion.value || 'BLOQUEA';
+      const motivo = inputObservaciones.value || 'Bloqueo preventivo aplicado desde Gestor de fraudes';
+
+      try {
+        const res = await fetch('/sumas/actualizar-estado', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            cedula: clienteActual.cedula,
+            decision,
+            motivo,
+            transactionId: clienteActual.alerta?.transactionId || 'TXN-MANUAL',
+          }),
+        });
+        const data = await res.json();
+        msgActualizacion.textContent = `✅ ${data.message}`;
+        msgActualizacion.className = 'text-center text-xs font-bold mt-3 text-[#f97316]';
+        msgActualizacion.classList.remove('hidden');
+
+        // Refrescar datos del cliente para ver el estado actualizado en las tablas
+        await buscarYSimular(clienteActual.cedula);
+        msgActualizacion.classList.remove('hidden');
+      } catch (err) {
+        msgActualizacion.textContent = '❌ Error al actualizar el estado: ' + err.message;
+        msgActualizacion.className = 'text-center text-xs font-bold mt-3 text-red-600';
+        msgActualizacion.classList.remove('hidden');
+      }
+    });
+
+    // Modal Catálogo (Ctrl + K o clic en la lupa)
+    function abrirModal() {
+      modalCatalogo.classList.remove('hidden');
+      inputFiltroModal.value = '';
+      renderizarListaModal('');
+      inputFiltroModal.focus();
+    }
+
+    function cerrarModal() {
+      modalCatalogo.classList.add('hidden');
+    }
+
+    function renderizarListaModal(filtro) {
+      const q = (filtro || '').toLowerCase().trim();
+      const filtrados = catalogoClientes.filter(
+        (c) =>
+          !q ||
+          c.cedula.toLowerCase().includes(q) ||
+          c.nombre.toLowerCase().includes(q) ||
+          c.etiquetaCaso.toLowerCase().includes(q) ||
+          c.ciudadOrigen.toLowerCase().includes(q)
+      );
+
+      listaModalCasos.innerHTML = filtrados
+        .map(
+          (c) => `
+          <button
+            type="button"
+            data-cedula="${c.cedula}"
+            class="item-modal-caso w-full text-left px-5 py-3 hover:bg-orange-50 flex items-center justify-between gap-4 transition cursor-pointer"
+          >
+            <div>
+              <div class="text-xs font-bold text-gray-900">
+                ${iconoCategoria(c.categoria)} <span class="font-mono text-[#f97316]">${c.cedula}</span> — ${c.nombre}
+              </div>
+              <div class="text-[11px] text-gray-500 mt-0.5">${c.etiquetaCaso}</div>
+            </div>
+            <div class="text-right shrink-0">
+              <span class="text-[11px] font-mono bg-gray-100 px-2 py-0.5 rounded text-gray-600">${c.ciudadOrigen}</span>
+              <div class="text-[10px] text-gray-400 mt-0.5">${c.tipo} • $${c.monto.toLocaleString('es-CO')}</div>
+            </div>
+          </button>
+        `
+        )
+        .join('');
+
+      document.querySelectorAll('.item-modal-caso').forEach((el) => {
+        el.addEventListener('click', () => {
+          const ced = el.getAttribute('data-cedula');
+          inputDocumento.value = ced;
+          cerrarModal();
+          buscarYSimular(ced);
+        });
+      });
+    }
+
+    btnCtrlK.addEventListener('click', abrirModal);
+    btnLupaInput.addEventListener('click', abrirModal);
+    btnCerrarModal.addEventListener('click', cerrarModal);
+    modalCatalogo.addEventListener('click', (e) => {
+      if (e.target === modalCatalogo) cerrarModal();
+    });
+    inputFiltroModal.addEventListener('input', () => {
+      renderizarListaModal(inputFiltroModal.value);
+    });
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        abrirModal();
+      } else if (e.key === 'Escape') {
+        cerrarModal();
+      }
+    });
+
+    // Inicializar catálogo al abrir la página
+    cargarCatalogo();
   </script>
 </body>
 </html>
