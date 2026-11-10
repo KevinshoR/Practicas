@@ -724,13 +724,15 @@
           ciudadOrigen: ciudadOrigen,
         },
         datos: {
-          celular: datos.celular,
-          correo: datos.correo,
+          celular: datos.celular ? { ...datos.celular, valor: datos.celularTexto } : undefined,
+          correo: datos.correo ? { ...datos.correo, valor: datos.correoTexto } : undefined,
           direccion: datos.direccion,
         },
         biometria: datos.biometria,
         historial: datos.historial,
         ciudadesFrecuentes: datos.ciudadesFrecuentes,
+        historialDatos: datos.historialDatos,
+        carga: datos.sinInformacion ? 'sin_informacion' : datos.carga,
       };
 
       const resDecision = await fetch(`/decision/${encodeURIComponent(tipoProceso)}`, {

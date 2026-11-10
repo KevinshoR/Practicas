@@ -351,7 +351,7 @@ export class DecisionService {
       biometria: {
         disponible: Boolean(cliente.biometria?.disponible),
         proveedor: cliente.biometria?.proveedor ?? 'veriff',
-        nivelUnicus: cliente.biometria?.nivelUnicus,
+        nivelUnicus: (cliente.biometria as { nivelUnicus?: number })?.nivelUnicus,
         estado: cliente.biometria?.estado,
       },
       historial: {

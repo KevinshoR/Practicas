@@ -1,148 +1,82 @@
 {
-  "name": "Simulador Correo Monitoreo Antifraude - Sumas",
+  "name": "Antifraude v2 - simulador con plazo de 3 minutos",
   "nodes": [
     {
-      "parameters": {},
-      "id": "1a111111-1111-4111-8111-111111111111",
-      "name": "Simular Llegada de Correo",
+      "id": "nodo-1",
+      "name": "Simular solicitud",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
-      "position": [220, 220]
+      "parameters": {},
+      "position": [
+        0,
+        0
+      ]
     },
     {
+      "id": "nodo-2",
+      "name": "Webhook Sumas",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
       "parameters": {
         "httpMethod": "POST",
         "path": "correo-monitoreo",
         "responseMode": "onReceived",
         "options": {}
       },
-      "id": "1b222222-2222-4222-8222-222222222222",
-      "name": "Webhook Disparador Sumas",
-      "type": "n8n-nodes-base.webhook",
+      "position": [
+        0,
+        220
+      ],
+      "webhookId": "correo-monitoreo-sumas-v2"
+    },
+    {
+      "id": "nodo-3",
+      "name": "Preparar solicitud",
+      "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [220, 420],
-      "webhookId": "correo-monitoreo-sumas"
-    },
-    {
       "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "asig-subject",
-              "name": "subject",
-              "value": "={{ $json.body?.subject \vert{}\vert{} $json.subject || 'Alerta de Monitoreo Transaccional - Crédito CRE-9001 - Tx TXN-MANUAL-001' }}",
-              "type": "string"
-            },
-            {
-              "id": "asig-text",
-              "name": "text",
-              "value": "={{ $json.body?.text \vert{}\vert{} $json.text || 'Notificación automática del Disparador Transaccional Sumas:\\nCédula: 1001001001\\nTransacción: TXN-MANUAL-001\\nValor Crédito: 450000\\nCRE Crédito: CRE-9001' }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
+        "jsCode": "const entrada = $input.first().json;\nconst origen = entrada.body ?? entrada;\nconst manual = Object.keys(origen).length === 0;\nconst ahora = new Date().toISOString();\nconst demo = {\n  cedula: '1001001001', transactionId: `TXN-MANUAL-${Date.now()}`,\n  valorCredito: 450000, creCredito: 'CRE-MANUAL', solicitudTomadaEn: ahora,\n};\nconst texto = String(origen.text ?? '').replace(/\\\\n/g, '\\n');\nconst extraido = origen.datosExtraidos ?? {};\nconst captura = (regex) => (texto.match(regex) ?? [])[1];\nconst montoTexto = captura(/Valor Cr[ée]dito:\\s*\\$?([0-9.]+)/i);\nconst solicitud = manual ? demo : {\n  cedula: extraido.cedula ?? origen.cedula ?? captura(/C[ée]dula:\\s*(\\d+)/i),\n  transactionId: extraido.transactionId ?? origen.transactionId ?? captura(/Transacci[óo]n:\\s*([A-Za-z0-9_-]+)/i),\n  valorCredito: extraido.valorCredito ?? origen.valorCredito ?? (montoTexto ? Number(montoTexto.replace(/\\./g, '')) : undefined),\n  creCredito: extraido.creCredito ?? origen.creCredito ?? captura(/CRE Cr[ée]dito:\\s*([A-Za-z0-9_-]+)/i) ?? '',\n  solicitudTomadaEn: extraido.solicitudTomadaEn ?? origen.solicitudTomadaEn ?? origen.fecha,\n};\nconst proceso = origen.proceso ?? 'monitoreo';\nif (!['monitoreo', 'onboarding', 'cambio_datos'].includes(proceso)) throw new Error('Proceso inválido');\nif (!solicitud.cedula || !solicitud.transactionId) throw new Error('Falta cédula o transacción');\nif (typeof solicitud.valorCredito !== 'number' || !Number.isFinite(solicitud.valorCredito) || solicitud.valorCredito < 0) throw new Error('Monto inválido');\nif (!solicitud.solicitudTomadaEn || !Number.isFinite(Date.parse(solicitud.solicitudTomadaEn))) {\n  throw new Error('Falta hora ORIGINAL de toma de solicitud. No reemplazar por hora de recepción del correo.');\n}\nreturn [{ json: { ...solicitud, cedula: String(solicitud.cedula), transactionId: String(solicitud.transactionId), proceso, esReintento: false } }];"
       },
-      "id": "2a333333-3333-4333-8333-333333333333",
-      "name": "Correo de Entrada",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [460, 320]
+      "position": [
+        240,
+        100
+      ]
     },
     {
+      "id": "nodo-4",
+      "name": "Consultar motor",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://[::1]:3000/decision/solicitud/' + $('Preparar solicitud').item.json.proceso }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { ...$json, esReintento: false } }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "position": [
+        500,
+        100
+      ]
+    },
+    {
+      "id": "nodo-5",
+      "name": "Requiere reconsulta",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
       "parameters": {
         "conditions": {
           "options": {
-            "caseSensitive": false,
+            "caseSensitive": true,
             "leftValue": "",
             "typeValidation": "strict"
           },
           "conditions": [
             {
-              "id": "cond-asunto",
-              "leftValue": "={{ $json.subject }}",
-              "rightValue": "Alerta de Monitoreo",
-              "operator": {
-                "type": "string",
-                "operation": "contains"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "id": "3a444444-4444-4444-8444-444444444444",
-      "name": "Filtrar por Asunto",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [680, 320]
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "ext-cedula",
-              "name": "cedula",
-              "value": "={{ ($json.text.match(/C[ée]dula:\\s*(\\d+)/i) || [])[1] || '' }}",
-              "type": "string"
-            },
-            {
-              "id": "ext-tx",
-              "name": "transactionId",
-              "value": "={{ ($json.text.match(/Transacci[óo]n:\\s*([A-Za-z0-9_-]+)/i) || [])[1] || '' }}",
-              "type": "string"
-            },
-            {
-              "id": "ext-valor",
-              "name": "valorCredito",
-              "value": "={{ Number((($json.text.match(/Valor Cr[ée]dito:\\s*\\$?([0-9.]+)/i) || [])[1] || '0').replace(/\\./g, '')) }}",
-              "type": "number"
-            },
-            {
-              "id": "ext-cre",
-              "name": "creCredito",
-              "value": "={{ ($json.text.match(/CRE Cr[ée]dito:\\s*([A-Za-z0-9_-]+)/i) || [])[1] || '' }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "4a555555-5555-4555-8555-555555555555",
-      "name": "Listo para el motor",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [920, 320]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "http://[::1]:3000/decision/monitoreo/desde-correo",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"cedula\": \"{{ $json.cedula }}\",\n  \"transactionId\": \"{{ $json.transactionId }}\",\n  \"valorCredito\": {{ $json.valorCredito }},\n  \"creCredito\": \"{{ $json.creCredito }}\",\n  \"esReintento\": false\n}",
-        "options": {}
-      },
-      "id": "5a666666-6666-4666-8666-666666666666",
-      "name": "Evaluar en Motor NestJS",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [1160, 320]
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "loose"
-          },
-          "conditions": [
-            {
-              "id": "cond-duplicado",
-              "leftValue": "={{ Boolean($json.duplicado) }}",
+              "leftValue": "={{ $json.pendienteConsulta === true && !$json.duplicado }}",
               "rightValue": true,
               "operator": {
                 "type": "boolean",
@@ -154,78 +88,52 @@
         },
         "options": {}
       },
-      "id": "6a777777-7777-4777-8777-777777777777",
-      "name": "¿Es Duplicado?",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [1400, 320]
+      "position": [
+        740,
+        100
+      ]
     },
     {
-      "parameters": {},
-      "id": "7a888888-8888-4888-8888-888888888888",
-      "name": "Duplicado",
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [1640, 160]
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "loose"
-          },
-          "conditions": [
-            {
-              "id": "cond-pendiente-bio",
-              "leftValue": "={{ Boolean($json.pendienteBiometria) }}",
-              "rightValue": true,
-              "operator": {
-                "type": "boolean",
-                "operation": "equals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "id": "8a999999-9999-4999-8999-999999999999",
-      "name": "¿Pendiente Biometría?",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [1640, 420]
-    },
-    {
-      "parameters": {
-        "amount": 10,
-        "unit": "seconds"
-      },
-      "id": "9aaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
-      "name": "Wait (10s pruebas / 5m prod)",
+      "id": "nodo-6",
+      "name": "Esperar reconsulta",
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
-      "position": [1900, 280],
+      "parameters": {
+        "amount": "={{ Math.max(1, Math.ceil($json.reintentarEnMs / 1000)) }}",
+        "unit": "seconds"
+      },
+      "position": [
+        960,
+        0
+      ],
       "notesInFlow": true,
-      "notes": "NOTA: 10 segundos para pruebas locales. En producción configurar a 5 minutos."
+      "notes": "Una sola reconsulta, normalmente a los 10 segundos. Nunca cambiar a cinco minutos. La hora original se conserva."
     },
     {
-      "parameters": {
-        "method": "POST",
-        "url": "http://[::1]:3000/decision/monitoreo/desde-correo",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"cedula\": \"{{ $('Listo para el motor').item.json.cedula }}\",\n  \"transactionId\": \"{{ $('Listo para el motor').item.json.transactionId }}\",\n  \"valorCredito\": {{ $('Listo para el motor').item.json.valorCredito }},\n  \"creCredito\": \"{{ $('Listo para el motor').item.json.creCredito }}\",\n  \"esReintento\": true\n}",
-        "options": {}
-      },
-      "id": "abbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
-      "name": "Reintentar en Motor (esReintento=true)",
+      "id": "nodo-7",
+      "name": "Reconsultar una vez",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [2160, 280]
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://[::1]:3000/decision/solicitud/' + $('Preparar solicitud').item.json.proceso }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { ...$('Preparar solicitud').item.json, esReintento: true } }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "position": [
+        1180,
+        0
+      ]
     },
     {
+      "id": "nodo-8",
+      "name": "Resultado",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
       "parameters": {
         "rules": {
           "values": [
@@ -297,165 +205,154 @@
             }
           ]
         },
-        "options": {}
+        "options": {
+          "fallbackOutput": "extra"
+        }
       },
-      "id": "bccccccc-cccc-4ccc-8ccc-cccccccccccc",
-      "name": "Switch por Decisión",
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3,
-      "position": [2420, 460]
+      "position": [
+        1420,
+        120
+      ]
     },
     {
-      "parameters": {},
-      "id": "cddddddd-dddd-4ddd-8ddd-dddddddddddd",
+      "id": "nodo-9",
       "name": "PASA",
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
-      "position": [2700, 300]
+      "parameters": {},
+      "position": [
+        1660,
+        -80
+      ],
+      "notesInFlow": true,
+      "notes": "Salida de demostración. El motor ya registra la decisión. No añadir otro bloqueo aquí ni reintentos automáticos de acciones."
     },
     {
-      "parameters": {},
-      "id": "deeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",
+      "id": "nodo-10",
       "name": "BLOQUEA",
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
-      "position": [2700, 460]
+      "parameters": {},
+      "position": [
+        1660,
+        80
+      ],
+      "notesInFlow": true,
+      "notes": "Salida de demostración. El motor ya registra la decisión. No añadir otro bloqueo aquí ni reintentos automáticos de acciones."
     },
     {
-      "parameters": {},
-      "id": "efffffff-ffff-4fff-8fff-ffffffffffff",
+      "id": "nodo-11",
       "name": "ALERTA_HUMANA",
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
-      "position": [2700, 620]
+      "parameters": {},
+      "position": [
+        1660,
+        240
+      ],
+      "notesInFlow": true,
+      "notes": "Salida de demostración. El motor ya registra la decisión. No añadir otro bloqueo aquí ni reintentos automáticos de acciones."
+    },
+    {
+      "id": "nodo-12",
+      "name": "CERRADA O SIN DECISION",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "parameters": {},
+      "position": [
+        1660,
+        400
+      ],
+      "notesInFlow": true,
+      "notes": "Salida de demostración. El motor ya registra la decisión. No añadir otro bloqueo aquí ni reintentos automáticos de acciones."
     }
   ],
   "connections": {
-    "Simular Llegada de Correo": {
+    "Simular solicitud": {
       "main": [
         [
           {
-            "node": "Correo de Entrada",
+            "node": "Preparar solicitud",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Webhook Disparador Sumas": {
+    "Webhook Sumas": {
       "main": [
         [
           {
-            "node": "Correo de Entrada",
+            "node": "Preparar solicitud",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Correo de Entrada": {
+    "Preparar solicitud": {
       "main": [
         [
           {
-            "node": "Filtrar por Asunto",
+            "node": "Consultar motor",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Filtrar por Asunto": {
+    "Consultar motor": {
       "main": [
         [
           {
-            "node": "Listo para el motor",
+            "node": "Requiere reconsulta",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Listo para el motor": {
+    "Requiere reconsulta": {
       "main": [
         [
           {
-            "node": "Evaluar en Motor NestJS",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Evaluar en Motor NestJS": {
-      "main": [
-        [
-          {
-            "node": "¿Es Duplicado?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "¿Es Duplicado?": {
-      "main": [
-        [
-          {
-            "node": "Duplicado",
+            "node": "Esperar reconsulta",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "¿Pendiente Biometría?",
+            "node": "Resultado",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "¿Pendiente Biometría?": {
+    "Esperar reconsulta": {
       "main": [
         [
           {
-            "node": "Wait (10s pruebas / 5m prod)",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Switch por Decisión",
+            "node": "Reconsultar una vez",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Wait (10s pruebas / 5m prod)": {
+    "Reconsultar una vez": {
       "main": [
         [
           {
-            "node": "Reintentar en Motor (esReintento=true)",
+            "node": "Resultado",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Reintentar en Motor (esReintento=true)": {
-      "main": [
-        [
-          {
-            "node": "Switch por Decisión",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Switch por Decisión": {
+    "Resultado": {
       "main": [
         [
           {
@@ -474,6 +371,13 @@
         [
           {
             "node": "ALERTA_HUMANA",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "CERRADA O SIN DECISION",
             "type": "main",
             "index": 0
           }

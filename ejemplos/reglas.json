@@ -1,0 +1,408 @@
+[
+  {
+    "nombre": "Celular fuerte basta con Unicus bajo",
+    "ruta": "/decision/monitoreo",
+    "proceso": "monitoreo",
+    "esperado": "PASA",
+    "entrada": {
+      "alerta": {
+        "transactionId": "EJEMPLO-1",
+        "monto": 350000,
+        "ciudadOrigen": "Bogotá"
+      },
+      "datos": {
+        "celular": {
+          "valor": "3001111111",
+          "reportes": 6,
+          "entidades": 1
+        },
+        "correo": {
+          "reportes": 0,
+          "entidades": 0
+        },
+        "direccion": {
+          "reportes": 0,
+          "entidades": 0
+        }
+      },
+      "biometria": {
+        "disponible": true,
+        "proveedor": "unicus",
+        "nivelUnicus": 1
+      },
+      "historial": {
+        "creditosActivos": 0,
+        "comprasPrevias": 0,
+        "alDia": false
+      },
+      "ciudadesFrecuentes": [],
+      "carga": "completa"
+    }
+  },
+  {
+    "nombre": "Solo correo fuerte, evaluación posterior a reconsulta",
+    "ruta": "/decision/monitoreo",
+    "proceso": "monitoreo",
+    "esperado": "PASA",
+    "entrada": {
+      "alerta": {
+        "transactionId": "EJEMPLO-2",
+        "monto": 350000,
+        "ciudadOrigen": "Bogotá"
+      },
+      "datos": {
+        "correo": {
+          "reportes": 6,
+          "entidades": 0
+        }
+      },
+      "biometria": {
+        "disponible": false
+      },
+      "historial": null,
+      "ciudadesFrecuentes": [],
+      "carga": "completa"
+    }
+  },
+  {
+    "nombre": "Alternativo 3/5 frente a 60/40",
+    "ruta": "/decision/monitoreo",
+    "proceso": "monitoreo",
+    "esperado": "PASA",
+    "entrada": {
+      "alerta": {
+        "transactionId": "EJEMPLO-3",
+        "monto": 350000,
+        "ciudadOrigen": "Bogotá"
+      },
+      "datos": {
+        "celular": {
+          "valor": "3001111111",
+          "reportes": 1,
+          "entidades": 1
+        },
+        "correo": {
+          "valor": "actual@example.test",
+          "reportes": 1,
+          "entidades": 1
+        },
+        "direccion": {
+          "reportes": 0,
+          "entidades": 0
+        }
+      },
+      "biometria": {
+        "disponible": true,
+        "proveedor": "unicus",
+        "nivelUnicus": 1
+      },
+      "historial": {
+        "creditosActivos": 0,
+        "comprasPrevias": 0,
+        "alDia": false
+      },
+      "ciudadesFrecuentes": [],
+      "carga": "completa",
+      "historialDatos": {
+        "celulares": [
+          {
+            "valor": "3001111111",
+            "reportes": 3,
+            "entidades": 5
+          },
+          {
+            "valor": "3009999999",
+            "reportes": 60,
+            "entidades": 40
+          }
+        ]
+      }
+    }
+  },
+  {
+    "nombre": "Usado 1/1 frente a fuerte, sin otro contacto suficiente",
+    "ruta": "/decision/monitoreo",
+    "proceso": "monitoreo",
+    "esperado": "BLOQUEA",
+    "entrada": {
+      "alerta": {
+        "transactionId": "EJEMPLO-4",
+        "monto": 350000,
+        "ciudadOrigen": "Bogotá"
+      },
+      "datos": {
+        "celular": {
+          "valor": "3001111111",
+          "reportes": 1,
+          "entidades": 1
+        },
+        "correo": {
+          "valor": "actual@example.test",
+          "reportes": 1,
+          "entidades": 1
+        },
+        "direccion": {
+          "reportes": 0,
+          "entidades": 0
+        }
+      },
+      "biometria": {
+        "disponible": true,
+        "proveedor": "unicus",
+        "nivelUnicus": 5
+      },
+      "historial": {
+        "creditosActivos": 0,
+        "comprasPrevias": 0,
+        "alDia": false
+      },
+      "ciudadesFrecuentes": [],
+      "carga": "completa",
+      "historialDatos": {
+        "celulares": [
+          {
+            "valor": "3001111111",
+            "reportes": 1,
+            "entidades": 1
+          },
+          {
+            "valor": "3009999999",
+            "reportes": 60,
+            "entidades": 40
+          }
+        ]
+      }
+    }
+  },
+  {
+    "nombre": "Correo fuerte compensa teléfono débil",
+    "ruta": "/decision/monitoreo",
+    "proceso": "monitoreo",
+    "esperado": "PASA",
+    "entrada": {
+      "alerta": {
+        "transactionId": "EJEMPLO-5",
+        "monto": 350000,
+        "ciudadOrigen": "Bogotá"
+      },
+      "datos": {
+        "celular": {
+          "valor": "3001111111",
+          "reportes": 1,
+          "entidades": 1
+        },
+        "correo": {
+          "valor": "actual@example.test",
+          "reportes": 6,
+          "entidades": 1
+        },
+        "direccion": {
+          "reportes": 0,
+          "entidades": 0
+        }
+      },
+      "biometria": {
+        "disponible": true,
+        "proveedor": "unicus",
+        "nivelUnicus": 5
+      },
+      "historial": {
+        "creditosActivos": 0,
+        "comprasPrevias": 0,
+        "alDia": false
+      },
+      "ciudadesFrecuentes": [],
+      "carga": "completa",
+      "historialDatos": {
+        "celulares": [
+          {
+            "valor": "3001111111",
+            "reportes": 1,
+            "entidades": 1
+          },
+          {
+            "valor": "3009999999",
+            "reportes": 60,
+            "entidades": 40
+          }
+        ]
+      }
+    }
+  },
+  {
+    "nombre": "Solo dirección fuerte no aprueba",
+    "ruta": "/decision/monitoreo",
+    "proceso": "monitoreo",
+    "esperado": "BLOQUEA",
+    "entrada": {
+      "alerta": {
+        "transactionId": "EJEMPLO-6",
+        "monto": 350000,
+        "ciudadOrigen": "Bogotá"
+      },
+      "datos": {
+        "celular": {
+          "reportes": 0,
+          "entidades": 0
+        },
+        "correo": {
+          "reportes": 0,
+          "entidades": 0
+        },
+        "direccion": {
+          "reportes": 40,
+          "entidades": 20
+        }
+      },
+      "biometria": {
+        "disponible": true,
+        "proveedor": "unicus",
+        "nivelUnicus": 5
+      },
+      "historial": {
+        "creditosActivos": 0,
+        "comprasPrevias": 0,
+        "alDia": false
+      },
+      "ciudadesFrecuentes": [],
+      "carga": "completa"
+    }
+  },
+  {
+    "nombre": "Únicos contactos 1/1 y biometría buena, matriz original",
+    "ruta": "/decision/monitoreo",
+    "proceso": "monitoreo",
+    "esperado": "PASA",
+    "entrada": {
+      "alerta": {
+        "transactionId": "EJEMPLO-7",
+        "monto": 350000,
+        "ciudadOrigen": "Bogotá"
+      },
+      "datos": {
+        "celular": {
+          "valor": "3001111111",
+          "reportes": 1,
+          "entidades": 1
+        },
+        "correo": {
+          "valor": "actual@example.test",
+          "reportes": 1,
+          "entidades": 1
+        },
+        "direccion": {
+          "reportes": 0,
+          "entidades": 0
+        }
+      },
+      "biometria": {
+        "disponible": true,
+        "proveedor": "unicus",
+        "nivelUnicus": 5
+      },
+      "historial": {
+        "creditosActivos": 0,
+        "comprasPrevias": 0,
+        "alDia": false
+      },
+      "ciudadesFrecuentes": [],
+      "carga": "completa"
+    }
+  },
+  {
+    "nombre": "Veriff rechazado con contacto fuerte, excepción humana",
+    "ruta": "/decision/monitoreo",
+    "proceso": "monitoreo",
+    "esperado": "ALERTA_HUMANA",
+    "entrada": {
+      "alerta": {
+        "transactionId": "EJEMPLO-8",
+        "monto": 350000,
+        "ciudadOrigen": "Bogotá"
+      },
+      "datos": {
+        "celular": {
+          "valor": "3001111111",
+          "reportes": 6,
+          "entidades": 1
+        },
+        "correo": {
+          "valor": "actual@example.test",
+          "reportes": 1,
+          "entidades": 1
+        },
+        "direccion": {
+          "reportes": 0,
+          "entidades": 0
+        }
+      },
+      "biometria": {
+        "disponible": true,
+        "proveedor": "veriff",
+        "estado": "declined"
+      },
+      "historial": {
+        "creditosActivos": 0,
+        "comprasPrevias": 0,
+        "alDia": false
+      },
+      "ciudadesFrecuentes": [],
+      "carga": "completa"
+    }
+  },
+  {
+    "nombre": "Ausencia total tras reconsultar",
+    "ruta": "/decision/monitoreo",
+    "proceso": "monitoreo",
+    "esperado": "ALERTA_HUMANA",
+    "entrada": {
+      "alerta": {
+        "transactionId": "EJEMPLO-9",
+        "monto": 350000,
+        "ciudadOrigen": "Bogotá"
+      },
+      "carga": "sin_informacion"
+    }
+  },
+  {
+    "nombre": "Cambio de datos conserva revisión y estudia todos los respaldos",
+    "ruta": "/decision/cambio_datos",
+    "proceso": "cambio_datos",
+    "esperado": "ALERTA_HUMANA",
+    "entrada": {
+      "alerta": {
+        "transactionId": "EJEMPLO-10",
+        "monto": 350000,
+        "ciudadOrigen": "Bogotá"
+      },
+      "datos": {
+        "celular": {
+          "valor": "3001111111",
+          "reportes": 6,
+          "entidades": 1
+        },
+        "correo": {
+          "valor": "actual@example.test",
+          "reportes": 1,
+          "entidades": 1
+        },
+        "direccion": {
+          "reportes": 0,
+          "entidades": 0
+        }
+      },
+      "biometria": {
+        "disponible": true,
+        "proveedor": "unicus",
+        "nivelUnicus": 5
+      },
+      "historial": {
+        "creditosActivos": 0,
+        "comprasPrevias": 0,
+        "alDia": false
+      },
+      "ciudadesFrecuentes": [],
+      "carga": "completa"
+    }
+  }
+]

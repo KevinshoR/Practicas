@@ -1,6 +1,5 @@
 import { Controller, Get, Param, Post, Body } from '@nestjs/common';
-import { SumasService, DisparoCompraDto } from './sumas.service';
-
+import { SumasService, type DisparoCompraDto } from './sumas.service';
 @Controller('sumas')
 export class SumasController {
   constructor(private readonly sumasService: SumasService) {}
