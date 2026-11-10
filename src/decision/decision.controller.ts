@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, Post } from '@nestjs/common';
 import { AlertaDto, DesdeCorreoDto } from './alerta.dto';
 import { DecisionService } from './decision.service';
 
@@ -6,35 +6,50 @@ import { DecisionService } from './decision.service';
 export class DecisionController {
   constructor(private readonly decisionService: DecisionService) {}
 
-  private procesar(dto: AlertaDto, proceso: string) {
-    const r = this.decisionService.evaluarRiesgo(dto, proceso);
-    if (r.decision === 'ALERTA_HUMANA') this.decisionService.agregarARevision(dto, r);
-    return r;
-  }
-
+  // Estas tres rutas son vistas previas para la pantalla existente. No ejecutan acciones.
   @Post('onboarding')
   evaluarOnboarding(@Body() dto: AlertaDto) {
-    return this.procesar(dto, 'onboarding');
+    return {
+      ...this.decisionService.evaluarRiesgo(dto, 'onboarding'),
+      soloEvaluacion: true,
+    };
   }
-
   @Post('monitoreo')
   evaluarMonitoreo(@Body() dto: AlertaDto) {
-    return this.procesar(dto, 'monitoreo');
+    return {
+      ...this.decisionService.evaluarRiesgo(dto, 'monitoreo'),
+      soloEvaluacion: true,
+    };
   }
-
+  @Post('cambio_datos')
+  evaluarCambioDatos(@Body() dto: AlertaDto) {
+    return {
+      ...this.decisionService.evaluarCambioDatos(dto),
+      soloEvaluacion: true,
+    };
+  }
   @Post('monitoreo/desde-correo')
   @HttpCode(200)
   evaluarMonitoreoDesdeCorreo(@Body() dto: DesdeCorreoDto) {
     return this.decisionService.procesarMonitoreoDesdeCorreo(dto);
   }
-
-  @Post('cambio_datos')
-  evaluarCambioDatos(@Body() dto: AlertaDto) {
-    const r = this.decisionService.evaluarCambioDatos(dto);
-    this.decisionService.agregarARevision(dto, r);
-    return r;
+  /** Mismo control de plazo, reintento y deduplicación para los tres procesos. */
+  @Post('solicitud/:proceso')
+  @HttpCode(200)
+  procesarSolicitud(
+    @Param('proceso') proceso: string,
+    @Body() dto: DesdeCorreoDto,
+  ) {
+    return this.decisionService.procesarSolicitud(dto, proceso);
   }
-
+  @Get('configuracion')
+  configuracion() {
+    return {
+      entorno: 'simulador',
+      dryRun: this.decisionService.esDryRun(),
+      admiteSoloSimulacion: true,
+    };
+  }
   @Get('revision')
   listarRevision() {
     return this.decisionService.listarRevision();

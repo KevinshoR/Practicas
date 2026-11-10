@@ -1,0 +1,152 @@
+[
+  {
+    "id": "contacto_fuerte",
+    "nombre": "Celular fuerte con respaldo adicional",
+    "cedula": "1001001001",
+    "monto": 450000,
+    "proceso": "monitoreo",
+    "esperado": "PASA",
+    "codigoEsperado": "CONTACTO_FUERTE",
+    "reintentoEsperado": false
+  },
+  {
+    "id": "cero_cero",
+    "nombre": "Celular y correo sin reportes",
+    "cedula": "2002002002",
+    "monto": 350000,
+    "proceso": "monitoreo",
+    "esperado": "BLOQUEA",
+    "codigoEsperado": "CONTACTOS_SIN_REPORTES",
+    "reintentoEsperado": false
+  },
+  {
+    "id": "datos_bajos_respaldados",
+    "nombre": "Contactos bajos con biometría buena",
+    "cedula": "3003003003",
+    "monto": 420000,
+    "proceso": "monitoreo",
+    "esperado": "PASA",
+    "codigoEsperado": "CONTACTOS_Y_BIOMETRIA",
+    "reintentoEsperado": false
+  },
+  {
+    "id": "contacto_cero_respaldado",
+    "nombre": "Un contacto en cero, con respaldo",
+    "cedula": "4004004004",
+    "monto": 600000,
+    "proceso": "monitoreo",
+    "esperado": "PASA",
+    "codigoEsperado": "CONTACTO_CON_RESPALDO",
+    "reintentoEsperado": false
+  },
+  {
+    "id": "contacto_cero_sin_respaldo",
+    "nombre": "Un contacto en cero, sin respaldo",
+    "cedula": "5005005005",
+    "monto": 480000,
+    "proceso": "monitoreo",
+    "esperado": "BLOQUEA",
+    "codigoEsperado": "CONTACTO_CERO_SIN_RESPALDO",
+    "reintentoEsperado": false
+  },
+  {
+    "id": "estricto_aprobado",
+    "nombre": "Consumo 96%, Unicus 7",
+    "cedula": "6006006006",
+    "monto": 500000,
+    "proceso": "monitoreo",
+    "esperado": "PASA",
+    "codigoEsperado": "CONTACTOS_Y_BIOMETRIA",
+    "reintentoEsperado": false
+  },
+  {
+    "id": "estricto_bloqueado",
+    "nombre": "Consumo 96%, Unicus 6 sin respaldo",
+    "cedula": "7007007007",
+    "monto": 500000,
+    "proceso": "monitoreo",
+    "esperado": "BLOQUEA",
+    "codigoEsperado": "BIOMETRIA_BAJA_SIN_RESPALDO",
+    "reintentoEsperado": false
+  },
+  {
+    "id": "reintento_biometria",
+    "nombre": "Sin biometría, reconsulta y contactos 2-2",
+    "cedula": "8008008008",
+    "monto": 390000,
+    "proceso": "monitoreo",
+    "esperado": "PASA",
+    "codigoEsperado": "CONTACTOS_22",
+    "reintentoEsperado": true
+  },
+  {
+    "id": "rechazo_con_respaldo",
+    "nombre": "Veriff rechazado con respaldo",
+    "cedula": "9009009009",
+    "monto": 650000,
+    "proceso": "monitoreo",
+    "esperado": "ALERTA_HUMANA",
+    "codigoEsperado": "VERIFF_RECHAZADO_CON_RESPALDO",
+    "reintentoEsperado": false
+  },
+  {
+    "id": "biometria_revision",
+    "nombre": "Veriff en revisión",
+    "cedula": "1100110011",
+    "monto": 550000,
+    "proceso": "monitoreo",
+    "esperado": "ALERTA_HUMANA",
+    "codigoEsperado": "BIOMETRIA_INCONCLUSA",
+    "reintentoEsperado": false
+  },
+  {
+    "id": "ciudad_estricta",
+    "nombre": "Ciudad reforzada, Unicus 6 sin respaldo",
+    "cedula": "1200120012",
+    "monto": 620000,
+    "proceso": "monitoreo",
+    "esperado": "BLOQUEA",
+    "codigoEsperado": "BIOMETRIA_BAJA_SIN_RESPALDO",
+    "reintentoEsperado": false
+  },
+  {
+    "id": "sin_informacion",
+    "nombre": "Sin datos cargados, reconsulta y revisión",
+    "cedula": "108761000",
+    "monto": 300000,
+    "proceso": "monitoreo",
+    "esperado": "ALERTA_HUMANA",
+    "codigoEsperado": "SIN_INFORMACION",
+    "reintentoEsperado": true
+  },
+  {
+    "id": "onboarding_aprobado",
+    "nombre": "Cliente nuevo con contacto fuerte",
+    "cedula": "1001001001",
+    "monto": 1500000,
+    "proceso": "onboarding",
+    "esperado": "PASA",
+    "codigoEsperado": "CONTACTO_FUERTE",
+    "reintentoEsperado": false
+  },
+  {
+    "id": "onboarding_bloqueado",
+    "nombre": "Cliente nuevo sin reportes",
+    "cedula": "2002002002",
+    "monto": 350000,
+    "proceso": "onboarding",
+    "esperado": "BLOQUEA",
+    "codigoEsperado": "CONTACTOS_SIN_REPORTES",
+    "reintentoEsperado": false
+  },
+  {
+    "id": "cambio_datos",
+    "nombre": "Cambio de datos con estudio y revisión humana",
+    "cedula": "3003003003",
+    "monto": 420000,
+    "proceso": "cambio_datos",
+    "esperado": "ALERTA_HUMANA",
+    "codigoEsperado": "CAMBIO_DATOS",
+    "reintentoEsperado": false
+  }
+]

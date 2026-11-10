@@ -83,3 +83,29 @@ it('HTTP vista previa de contacto fuerte no ejecuta bloqueo', async () => {
     .expect(201);
   expect(res.body).toMatchObject({ decision: 'PASA', soloEvaluacion: true });
 });
+
+it('el disparador puede consultar que el backend admite simulación obligatoria', async () => {
+  const res = await request(app.getHttpServer())
+    .get('/decision/configuracion')
+    .expect(200);
+  expect(res.body).toMatchObject({
+    dryRun: true,
+    entorno: 'simulador',
+    admiteSoloSimulacion: true,
+  });
+});
+it('la solicitud de simulación se rechaza si DRY_RUN=false, antes de cualquier bloqueo', async () => {
+  process.env.DRY_RUN = 'false';
+  const body = { ...cuerpo(), cedula: '2002002002', soloSimulacion: true };
+  await request(app.getHttpServer())
+    .post('/decision/solicitud/monitoreo')
+    .send(body)
+    .expect(409);
+  expect(fs.readdirSync(directorio)).toHaveLength(0);
+});
+it('soloSimulacion exige booleano, no texto', async () => {
+  await request(app.getHttpServer())
+    .post('/decision/solicitud/monitoreo')
+    .send({ ...cuerpo(), soloSimulacion: 'true' })
+    .expect(400);
+});
