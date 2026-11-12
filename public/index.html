@@ -144,7 +144,6 @@
               href="#"
               class="flex items-center gap-4 px-3.5 py-2.5 text-[12px] text-gray-600 hover:bg-gray-100 rounded-lg transition"
             >
-              <!-- Icono llave inglesa (wrench) -->
               <svg class="w-5 h-5 text-gray-600 shrink-0" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z" />
               </svg>
@@ -158,7 +157,6 @@
               href="#"
               class="flex items-center gap-4 px-3.5 py-2.5 text-[12px] text-gray-600 hover:bg-gray-100 rounded-lg transition"
             >
-              <!-- Icono usuario -->
               <svg class="w-5 h-5 text-gray-600 shrink-0" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
               </svg>
@@ -172,7 +170,6 @@
               href="#"
               class="flex items-center gap-4 px-3.5 py-3 text-[12px] font-medium text-[#f97316] bg-[#e5e7eb] rounded-lg transition"
             >
-              <!-- Icono anzuelo naranja idéntico a la captura -->
               <svg class="w-5 h-5 text-[#f97316] shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                 <circle cx="12" cy="5" r="2" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 7v9a4 4 0 01-8 0v-2m0 0l2.5 2.5M4 14l-1.5 2.5" />
@@ -203,15 +200,15 @@
     <main class="flex-1 bg-white px-6 sm:px-12 py-8 overflow-y-auto relative">
       <div class="max-w-[1060px] mx-auto">
 
-        <!-- TÍTULO PRINCIPAL (Se oculta o se mantiene arriba según estado) -->
+        <!-- TÍTULO PRINCIPAL -->
         <h1 id="tituloPrincipal" class="text-[26px] font-bold text-center text-gray-900 mb-6 tracking-tight">
           Monitorea las <span class="text-[#f97316]">solicitudes</span> de crédito
         </h1>
 
-        <!-- CAJA SUPERIOR DERECHA DE ESTADO / BIOMETRÍA / SIN INFORMACIÓN (Captura 2) -->
+        <!-- CAJA SUPERIOR DERECHA DE ESTADO / BIOMETRÍA / SIN INFORMACIÓN -->
         <div id="panelEstadoSuperior" class="hidden mb-6 flex justify-end">
-          <div class="sumas-card w-full lg:w-[540px] px-7 py-4">
-            <!-- Vista cuando es "Sin información" (Idéntica a Captura 2) -->
+          <div class="sumas-card w-full lg:w-[580px] px-7 py-4">
+            <!-- Vista cuando es "Sin información" -->
             <div id="vistaSinInfo" class="hidden">
               <div class="border-b border-gray-200 pb-2 mb-3 text-xs text-gray-400 flex justify-between">
                 <span>Validación de Centrales y Biometría</span>
@@ -225,11 +222,11 @@
               </div>
             </div>
 
-            <!-- Vista cuando SÍ hay datos: Resumen Biometría, Centrales y Veredicto Motor -->
+            <!-- Vista cuando SÍ hay datos: Resumen Biometría, Centrales, Veredicto Motor y n8n -->
             <div id="vistaConInfo" class="hidden">
-              <div class="flex items-center justify-between border-b border-gray-200 pb-2.5 mb-3">
+              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 pb-2.5 mb-3">
                 <div class="flex items-center gap-2">
-                  <span class="text-xs font-bold text-gray-700 uppercase tracking-wide">Motor Antifraude:</span>
+                  <span class="text-xs font-bold text-gray-700 uppercase tracking-wide">Motor Local:</span>
                   <span
                     id="badgeVeredicto"
                     class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-bold"
@@ -237,9 +234,17 @@
                     --
                   </span>
                 </div>
-                <span id="badgeProceso" class="text-[11px] font-medium px-2.5 py-0.5 rounded bg-orange-50 text-[#f97316] border border-orange-200">
-                  monitoreo
-                </span>
+                <div class="flex items-center gap-2">
+                  <span
+                    id="badgeN8n"
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-gray-100 text-gray-600 border border-gray-200"
+                  >
+                    n8n: esperando...
+                  </span>
+                  <span id="badgeProceso" class="text-[11px] font-medium px-2.5 py-0.5 rounded bg-orange-50 text-[#f97316] border border-orange-200">
+                    monitoreo
+                  </span>
+                </div>
               </div>
 
               <!-- Resumen rápido de Biometría y Reportes -->
@@ -265,7 +270,7 @@
         </div>
 
         <!-- =============================================================== -->
-        <!-- BARRA DE BÚSQUEDA PRINCIPAL (Documento + Buscar + Actualizar)   -->
+        <!-- BARRA DE BÚSQUEDA PRINCIPAL (Documento + Buscar + Actualizar + n8n) -->
         <!-- =============================================================== -->
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-3">
           <!-- Input Documento con etiqueta flotante y lupa -->
@@ -307,6 +312,16 @@
           >
             Actualizar datos
           </button>
+
+          <!-- Botón Disparar a n8n en vivo -->
+          <button
+            id="btnDispararN8n"
+            type="button"
+            title="Enviar caso actual al Webhook publicado en apichatbotqa.sumas.co"
+            class="h-[46px] px-4 text-sm font-medium rounded-[4px] bg-[#f97316] text-white hover:bg-orange-600 transition shrink-0 cursor-pointer"
+          >
+            ⚡ Disparar a n8n
+          </button>
         </div>
 
         <!-- =============================================================== -->
@@ -320,7 +335,7 @@
                 Base de Pruebas Quemada (<span id="contadorCasos">120</span> Cédulas listas):
               </span>
               <span class="text-[11px] text-gray-500 hidden md:inline">
-                Selecciona cualquier caso o simplemente dale clic en <b>Buscar</b>
+                Cada clic evalúa en NestJS y dispara automáticamente a n8n
               </span>
             </div>
 
@@ -487,7 +502,7 @@
           <section class="sumas-card px-6 py-6">
             <div class="flex items-center justify-between mb-4">
               <h2 class="font-bold text-[14px] text-gray-800">
-                Detalle de Informes en Centrales, Biometría y Simulación de Reglas (`AlertaDto`)
+                Detalle de Informes en Centrales, Biometría, Motor NestJS y Flujo n8n
               </h2>
               <span id="etiquetaCasoActual" class="text-xs font-medium text-[#f97316] bg-orange-50 px-3 py-1 rounded-full border border-orange-200">
               </span>
@@ -517,19 +532,23 @@
                   type="button"
                   class="sumas-btn-outline w-full py-1.5 text-xs font-medium cursor-pointer"
                 >
-                  Re-evaluar Motor Antifraude
+                  Re-evaluar y Enviar a n8n
                 </button>
               </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
               <div>
-                <div class="text-xs font-bold text-gray-500 mb-1.5">Datos quemados del cliente (`/sumas/cliente/:cedula`)</div>
+                <div class="text-xs font-bold text-gray-500 mb-1.5">1. Datos del cliente (`/sumas/cliente/:cedula`)</div>
                 <pre id="jsonSumas" class="bg-gray-900 text-gray-100 rounded-xl p-3.5 text-[11px] font-mono overflow-x-auto max-h-64"></pre>
               </div>
               <div>
-                <div class="text-xs font-bold text-gray-500 mb-1.5">Respuesta del motor (`/decision/:tipo`)</div>
+                <div class="text-xs font-bold text-gray-500 mb-1.5">2. Motor NestJS (`/decision/:tipo`)</div>
                 <pre id="jsonDecision" class="bg-gray-900 text-gray-100 rounded-xl p-3.5 text-[11px] font-mono overflow-x-auto max-h-64"></pre>
+              </div>
+              <div>
+                <div class="text-xs font-bold text-[#f97316] mb-1.5">3. Respuesta n8n (`apichatbotqa.sumas.co`)</div>
+                <pre id="jsonN8n" class="bg-gray-900 text-green-400 rounded-xl p-3.5 text-[11px] font-mono overflow-x-auto max-h-64">Esperando disparo...</pre>
               </div>
             </div>
           </section>
@@ -539,7 +558,7 @@
     </main>
   </div>
 
-  <!-- Widget flotante inferior derecho (como en las capturas) -->
+  <!-- Widget flotante inferior derecho -->
   <div class="fixed bottom-3 right-3 bg-white border border-gray-200 shadow-md rounded-md p-2 flex flex-col items-center justify-center w-12 h-12 pointer-events-none opacity-90">
     <svg class="w-6 h-6 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
       <path d="M12 2a10 10 0 1010 10A10 10 0 0012 2zm1 14.93V14h-2v2.93A8 8 0 014.07 13H7v-2H4.07A8 8 0 0111 4.07V7h2V4.07A8 8 0 0119.93 11H17v2h2.93A8 8 0 0113 16.93z" />
@@ -558,7 +577,7 @@
       <div class="px-5 py-4 border-b border-gray-200 flex items-center justify-between bg-[#fafafa]">
         <div>
           <h3 class="font-bold text-sm text-gray-900">Catálogo de 120 Cédulas Quemadas para Pruebas</h3>
-          <p class="text-xs text-gray-500">Haz clic en cualquier cliente para cargarlo y evaluarlo automáticamente</p>
+          <p class="text-xs text-gray-500">Haz clic en cualquier cliente para cargarlo, evaluarlo y enviarlo a n8n automáticamente</p>
         </div>
         <button id="btnCerrarModal" type="button" class="text-gray-400 hover:text-gray-700 text-lg font-bold px-2">
           ✕
@@ -584,12 +603,14 @@
     let categoriaActual = 'TODOS';
     let clienteActual = null;
     let ultimoResultadoMotor = null;
+    let ultimoPayloadEvaluado = null;
     let indiceRotacion = 0;
 
     // Elementos del DOM
     const inputDocumento = document.getElementById('inputDocumento');
     const btnBuscar = document.getElementById('btnBuscar');
     const btnActualizarDatos = document.getElementById('btnActualizarDatos');
+    const btnDispararN8n = document.getElementById('btnDispararN8n');
     const selectCasoQuemado = document.getElementById('selectCasoQuemado');
     const btnCasoAleatorio = document.getElementById('btnCasoAleatorio');
     const contadorCasos = document.getElementById('contadorCasos');
@@ -600,6 +621,7 @@
     const lblCedulaSinInfo = document.getElementById('lblCedulaSinInfo');
 
     const badgeVeredicto = document.getElementById('badgeVeredicto');
+    const badgeN8n = document.getElementById('badgeN8n');
     const badgeProceso = document.getElementById('badgeProceso');
     const resumenBiometria = document.getElementById('resumenBiometria');
     const resumenCelular = document.getElementById('resumenCelular');
@@ -624,6 +646,7 @@
     const etiquetaCasoActual = document.getElementById('etiquetaCasoActual');
     const jsonSumas = document.getElementById('jsonSumas');
     const jsonDecision = document.getElementById('jsonDecision');
+    const jsonN8n = document.getElementById('jsonN8n');
 
     const modalCatalogo = document.getElementById('modalCatalogo');
     const btnCtrlK = document.getElementById('btnCtrlK');
@@ -667,17 +690,15 @@
         )
         .join('');
 
-      // Si el input Documento está vacío, dejamos preseleccionada la primera cédula para que darle a "Buscar" funcione sin escribir nada
       if (!inputDocumento.value && lista.length > 0) {
         inputDocumento.value = lista[0].cedula;
       }
     }
 
-    // 2. Ejecutar búsqueda de cliente y evaluación automática en el motor antifraude
+    // 2. Ejecutar búsqueda de cliente y evaluación automática en el motor antifraude + n8n
     async function buscarYSimular(cedulaParam) {
       let cedula = (cedulaParam ?? inputDocumento.value ?? '').trim();
 
-      // Si el usuario no escribió nada y le dio a "Buscar", tomamos el caso seleccionado o el siguiente de la lista
       if (!cedula) {
         const lista = obtenerClientesFiltrados();
         const elegido = selectCasoQuemado.value || (lista[0] && lista[0].cedula) || '1001001001';
@@ -688,26 +709,21 @@
       msgActualizacion.classList.add('hidden');
 
       try {
-        // A) Consultar datos del cliente en SumasParaTi
         const resSumas = await fetch(`/sumas/cliente/${encodeURIComponent(cedula)}`);
         const datos = await resSumas.json();
         clienteActual = datos;
 
-        // Sincronizar selector si existe en el catálogo
         if (catalogoClientes.some((c) => c.cedula === datos.cedula)) {
           selectCasoQuemado.value = datos.cedula;
         }
 
-        // Llenar controles de simulación
         simTipo.value = datos.alerta?.tipo || 'monitoreo';
         simMonto.value = datos.alerta?.monto ?? 350000;
         simCiudad.value = datos.alerta?.ciudadOrigen || 'Medellin';
         etiquetaCasoActual.textContent = datos.etiquetaCaso || 'Caso personalizado';
 
-        // Mostrar JSON quemado
         jsonSumas.textContent = JSON.stringify(datos, null, 2);
 
-        // Evaluar en el motor antifraude
         await evaluarEnMotor(datos, simTipo.value, Number(simMonto.value), simCiudad.value);
       } catch (err) {
         console.error('Error al buscar cliente:', err);
@@ -716,8 +732,10 @@
 
     async function evaluarEnMotor(datos, tipoProceso, monto, ciudadOrigen) {
       const payload = {
+        cedula: datos.cedula,
+        proceso: tipoProceso,
         alerta: {
-          transactionId: datos.alerta?.transactionId || 'TXN-123',
+          transactionId: `${datos.alerta?.transactionId || 'TXN'}-${Date.now()}`,
           tienda: datos.alerta?.tienda || 'Simulador',
           monto: monto,
           tipo: tipoProceso,
@@ -735,6 +753,8 @@
         carga: datos.sinInformacion ? 'sin_informacion' : datos.carga,
       };
 
+      ultimoPayloadEvaluado = payload;
+
       const resDecision = await fetch(`/decision/${encodeURIComponent(tipoProceso)}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -747,13 +767,71 @@
 
       // Renderizar toda la interfaz como en las capturas 2 y 3
       renderizarVistaResultados(datos, resultado, tipoProceso);
+
+      // Disparar automáticamente hacia n8n a través de NestJS
+      await dispararHaciaN8n(payload);
+    }
+
+    async function dispararHaciaN8n(payloadBase) {
+      if (!payloadBase && !clienteActual) return;
+      const bodyEnvio = payloadBase || ultimoPayloadEvaluado || {
+        cedula: clienteActual.cedula,
+        proceso: simTipo.value || 'monitoreo',
+        transactionId: `TXN-MANUAL-${Date.now()}`,
+        valorCredito: Number(simMonto.value || 350000),
+        celular: clienteActual.celularTexto,
+        correo: clienteActual.correoTexto,
+        datosIncompletos: Boolean(clienteActual.sinInformacion),
+      };
+
+      if (badgeN8n) {
+        badgeN8n.textContent = '⚡ n8n: enviando...';
+        badgeN8n.className =
+          'inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-orange-50 text-[#f97316] border border-orange-200';
+      }
+      if (jsonN8n) {
+        jsonN8n.textContent = 'Enviando petición a https://apichatbotqa.sumas.co/webhook/correo-monitoreo-kevin ...';
+      }
+
+      try {
+        const resN8n = await fetch('/decision/disparar-n8n', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(bodyEnvio),
+        });
+        const dataN8n = await resN8n.json();
+        jsonN8n.textContent = JSON.stringify(dataN8n, null, 2);
+
+        const decN8n = String(dataN8n.decision || dataN8n.nodoFinal || 'OK').toUpperCase();
+        if (badgeN8n) {
+          badgeN8n.textContent = `⚡ n8n: ${decN8n}`;
+          if (decN8n === 'PASA') {
+            badgeN8n.className =
+              'inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-green-100 text-green-800 border border-green-300';
+          } else if (decN8n === 'ALERTA_HUMANA') {
+            badgeN8n.className =
+              'inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-300';
+          } else {
+            badgeN8n.className =
+              'inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-red-100 text-red-700 border border-red-300';
+          }
+        }
+      } catch (err) {
+        if (jsonN8n) {
+          jsonN8n.textContent = 'Error conectando con n8n: ' + err.message;
+        }
+        if (badgeN8n) {
+          badgeN8n.textContent = '⚡ n8n: error';
+          badgeN8n.className =
+            'inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-red-100 text-red-700 border border-red-300';
+        }
+      }
     }
 
     function renderizarVistaResultados(datos, resultado, tipoProceso) {
       panelEstadoSuperior.classList.remove('hidden');
       contenedorResultados.classList.remove('hidden');
 
-      // 1. Caja superior derecha (Captura 2: "Sin información" vs Resumen con veredicto)
       if (datos.sinInformacion) {
         vistaSinInfo.classList.remove('hidden');
         vistaConInfo.classList.add('hidden');
@@ -777,7 +855,6 @@
 
         badgeProceso.textContent = `Proceso: ${tipoProceso}`;
 
-        // Resumen Biometría y Centrales
         const bio = datos.biometria || {};
         if (!bio.disponible) {
           resumenBiometria.textContent = 'Sin biometría';
@@ -800,7 +877,6 @@
           .join('');
       }
 
-      // 2. Tabla 1: Información del cliente
       if (datos.sinInformacion) {
         tbodyInfoCliente.innerHTML = `
           <tr>
@@ -844,7 +920,6 @@
         `;
       }
 
-      // 3. Tabla 2: Información cambio de datos sensibles
       const cambios = Array.isArray(datos.cambiosDatosSensibles) ? datos.cambiosDatosSensibles : [];
       if (cambios.length === 0) {
         tbodyCambioDatos.innerHTML = `
@@ -870,7 +945,6 @@
           .join('');
       }
 
-      // 4. Tabla 3: Información de Historia del Consumo
       const consumos = Array.isArray(datos.historiaConsumo) ? datos.historiaConsumo : [];
       if (consumos.length === 0) {
         tbodyHistoriaConsumo.innerHTML = `
@@ -898,7 +972,6 @@
           .join('');
       }
 
-      // 5. Pre-llenar Confirmación y Observaciones con el veredicto del motor
       selectConfirmacion.value = resultado.decision || 'BLOQUEA';
       inputObservaciones.value = resultado.motivo || '';
     }
@@ -908,6 +981,14 @@
       buscarYSimular(inputDocumento.value);
     });
 
+    btnDispararN8n.addEventListener('click', async () => {
+      if (!clienteActual) {
+        await buscarYSimular(inputDocumento.value);
+      } else {
+        await dispararHaciaN8n(ultimoPayloadEvaluado);
+      }
+    });
+
     inputDocumento.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -915,7 +996,6 @@
       }
     });
 
-    // Al cambiar el select de los 120 casos quemados, carga y busca inmediatamente sin hacer nada más
     selectCasoQuemado.addEventListener('change', () => {
       if (selectCasoQuemado.value) {
         inputDocumento.value = selectCasoQuemado.value;
@@ -923,7 +1003,6 @@
       }
     });
 
-    // Botón "Siguiente caso de prueba"
     btnCasoAleatorio.addEventListener('click', () => {
       const lista = obtenerClientesFiltrados();
       if (lista.length === 0) return;
@@ -934,7 +1013,6 @@
       buscarYSimular(caso.cedula);
     });
 
-    // Botón "Actualizar datos"
     btnActualizarDatos.addEventListener('click', () => {
       if (inputDocumento.value.trim()) {
         buscarYSimular(inputDocumento.value.trim());
@@ -943,7 +1021,6 @@
       }
     });
 
-    // Filtros de categoría (Todos, Positivos, Malos, Dudosos, Cambio Datos, Sin Info)
     document.querySelectorAll('.cat-pill').forEach((btn) => {
       btn.addEventListener('click', () => {
         categoriaActual = btn.getAttribute('data-cat') || 'TODOS';
@@ -964,7 +1041,6 @@
       });
     });
 
-    // Re-evaluar cambiando monto, ciudad o proceso manualmente
     btnReevaluar.addEventListener('click', async () => {
       if (!clienteActual) return;
       await evaluarEnMotor(
@@ -975,7 +1051,6 @@
       );
     });
 
-    // Botón "Bloqueo preventivo" -> Envía a POST /sumas/actualizar-estado
     btnBloqueoPreventivo.addEventListener('click', async () => {
       if (!clienteActual) return;
       const decision = selectConfirmacion.value || 'BLOQUEA';
@@ -997,7 +1072,6 @@
         msgActualizacion.className = 'text-center text-xs font-bold mt-3 text-[#f97316]';
         msgActualizacion.classList.remove('hidden');
 
-        // Refrescar datos del cliente para ver el estado actualizado en las tablas
         await buscarYSimular(clienteActual.cedula);
         msgActualizacion.classList.remove('hidden');
       } catch (err) {
@@ -1007,7 +1081,6 @@
       }
     });
 
-    // Modal Catálogo (Ctrl + K o clic en la lupa)
     function abrirModal() {
       modalCatalogo.classList.remove('hidden');
       inputFiltroModal.value = '';
@@ -1046,7 +1119,7 @@
             </div>
             <div class="text-right shrink-0">
               <span class="text-[11px] font-mono bg-gray-100 px-2 py-0.5 rounded text-gray-600">${c.ciudadOrigen}</span>
-              <div class="text-[10px] text-gray-400 mt-0.5">${c.tipo} • $${c.monto.toLocaleString('es-CO')}</div>
+              <div class="text-[10px] text-gray-400 mt-0.5">${c.tipo} $${c.monto.toLocaleString('es-CO')}</div>
             </div>
           </button>
         `
@@ -1081,7 +1154,6 @@
       }
     });
 
-    // Inicializar catálogo al abrir la página
     cargarCatalogo();
   </script>
 </body>

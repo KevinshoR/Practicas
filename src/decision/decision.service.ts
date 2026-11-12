@@ -43,22 +43,27 @@ export class DecisionService {
   constructor(@Optional() sumas?: SumasService) {
     this.fuente = new FuenteSumas(sumas ?? new SumasService());
   }
+
   /** Vista previa pura para la pantalla existente; no consume plazo ni bloquea. */
   evaluarRiesgo(dto: AlertaDto, proceso: string) {
     return evaluarReglas(dto, proceso);
   }
+
   evaluarCambioDatos(dto: AlertaDto) {
     return evaluarReglas(dto, 'cambio_datos');
   }
+
   esDryRun() {
     return process.env.DRY_RUN?.trim().toLowerCase() !== 'false';
   }
+
   enmascararCedula(cedula: string) {
     const valor = cedula.trim();
     return valor.length <= 3
       ? '***'
       : '*'.repeat(valor.length - 3) + valor.slice(-3);
   }
+
   private respuesta(
     estado: EstadoSolicitud,
     codigo: string,
@@ -79,6 +84,7 @@ export class DecisionService {
       entorno: 'simulador',
     };
   }
+
   private finalizar(
     estado: EstadoSolicitud,
     respuesta: RespuestaMotor,
@@ -90,6 +96,7 @@ export class DecisionService {
     if (!this.estados.auditar(estado)) respuesta.auditoriaPendiente = true;
     return respuesta;
   }
+
   private cerrar(estado: EstadoSolicitud, codigo = 'PLAZO_VENCIDO') {
     return this.finalizar(
       estado,
@@ -106,6 +113,7 @@ export class DecisionService {
       'CERRADA',
     );
   }
+
   listarRevision() {
     const pendientes: {
       id: string;
@@ -136,6 +144,7 @@ export class DecisionService {
     }
     return pendientes;
   }
+
   procesarMonitoreoDesdeCorreo(body: DesdeCorreoDto) {
     return this.procesarSolicitud(body, 'monitoreo');
   }
@@ -156,8 +165,7 @@ export class DecisionService {
       soloSimulacion: body.soloSimulacion,
       estadoSolicitud: body.estadoSolicitud,
     };
-    // Una notificación de aprobación puede llegar mientras la consulta está en curso.
-    // No debe esperar detrás de esa consulta para impedir un bloqueo.
+
     if (
       this.enCurso.has(limpio.transactionId) &&
       limpio.estadoSolicitud &&
@@ -182,10 +190,11 @@ export class DecisionService {
         `ORIGEN_${limpio.estadoSolicitud}`,
       );
     }
-    // Serializa la misma transacción dentro de la única instancia soportada.
+
     while (this.enCurso.has(limpio.transactionId)) {
       await this.enCurso.get(limpio.transactionId)!.catch(() => undefined);
     }
+
     const promesa = this.procesar(limpio, proceso);
     this.enCurso.set(limpio.transactionId, promesa);
     try {
@@ -195,6 +204,7 @@ export class DecisionService {
       this.cierresEnCurso.delete(limpio.transactionId);
     }
   }
+
   private async procesar(
     body: DesdeCorreoDto,
     proceso: Proceso,
@@ -307,7 +317,6 @@ export class DecisionService {
       informacionIncompleta(dto) ||
       !dto.biometria?.disponible;
     if (estado.consultas === 1 && necesitaReintento) {
-      // Si queda poco plazo, se reintenta antes. Nunca se extiende la fecha original.
       const espera = Math.min(
         CONFIG.REINTENTO_MS,
         Math.max(0, estado.vence - Date.now() - 1000),
@@ -354,7 +363,6 @@ export class DecisionService {
     };
     if (Date.now() >= estado.vence) return this.cerrar(estado);
     if (evaluacion.decision === 'BLOQUEA' && !estado.dryRun) {
-      // Persistir intención antes del efecto evita repetirlo a ciegas tras un reinicio.
       estado.fase = 'ACCION_INCIERTA';
       estado.respuesta = { ...respuesta, accion: 'ninguna' };
       this.estados.guardar(estado);
@@ -375,10 +383,102 @@ export class DecisionService {
         return this.finalizar(estado, respuesta, 'REVISION');
       }
     }
-    return this.finalizar(
+
+    const resultadoFinal = this.finalizar(
       estado,
       respuesta,
       evaluacion.decision === 'ALERTA_HUMANA' ? 'REVISION' : 'FINAL',
     );
+
+    // Sincronización automática con n8n cuando no estamos corriendo tests unitarios de Jest
+    if (!process.env.JEST_WORKER_ID) {
+      this.enviarAN8n({
+        ...body,
+        proceso,
+        celular: dto.datos?.celular?.valor,
+        correo: dto.datos?.correo?.valor,
+        historialCelulares: dto.historialDatos?.celulares?.map((c) => ({
+          celular: c.valor,
+          informes: c.reportes,
+          entidades: c.entidades,
+        
+        })),
+        historialCorreos: dto.historialDatos?.correos?.map((e) => ({
+          correo: e.valor,
+          informes: e.reportes,
+          entidades: e.entidades,
+        })),
+        biometriaOk:
+          dto.biometria?.disponible &&
+          evaluacion.evidencia.calidadBiometria !== 'rechazada',
+        evaluacionLocal: resultadoFinal,
+      }).catch(() => undefined);
+    }
+
+    return resultadoFinal;
+  }
+
+  async enviarAN8n(payload: Record<string, any>) {
+    const url =
+      process.env.N8N_WEBHOOK_URL ||
+      'https://apichatbotqa.sumas.co/webhook/correo-monitoreo-kevin';
+
+    // Si desde el frontend nos mandan un AlertaDto (con .alerta y .datos), extraemos los campos para n8n
+    let enriquecido: Record<string, any> = { ...payload };
+    if (payload.alerta && typeof payload.alerta === 'object') {
+      const dto = payload as unknown as AlertaDto;
+      const proceso = (payload.proceso as string) || 'monitoreo';
+      let evalLocal: any;
+      try {
+        evalLocal = evaluarReglas(dto, proceso);
+      } catch {
+        evalLocal = undefined;
+      }
+      enriquecido = {
+        ...payload,
+        proceso,
+        cedula:
+          (payload.cedula as string) ||
+          (dto.alerta as any).cedula ||
+          '1001001001',
+        transactionId: dto.alerta.transactionId,
+        valorCredito: dto.alerta.monto,
+        tienda: dto.alerta.tienda,
+        solicitudTomadaEn: new Date().toISOString(),
+        celular: dto.datos?.celular?.valor,
+        correo: dto.datos?.correo?.valor,
+        historialCelulares: dto.historialDatos?.celulares?.map((c) => ({
+          celular: c.valor,
+          informes: c.reportes,
+          entidades: c.entidades,
+        })),
+        historialCorreos: dto.historialDatos?.correos?.map((e) => ({
+          correo: e.valor,
+          informes: e.reportes,
+          entidades: e.entidades,
+        })),
+        biometriaOk:
+          evalLocal?.evidencia?.calidadBiometria === 'rechazada'
+            ? false
+            : undefined,
+        evaluacionLocal: evalLocal,
+      };
+    }
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        subject: 'Alerta de Monitoreo Transaccional',
+        ...enriquecido,
+      }),
+    });
+
+    if (!response.ok) {
+      const textoError = await response.text();
+      throw new Error(`Error en n8n (${response.status}): ${textoError}`);
+    }
+
+    return await response.json();
   }
 }

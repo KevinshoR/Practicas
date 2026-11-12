@@ -6,7 +6,10 @@ import { DecisionService } from './decision.service';
 export class DecisionController {
   constructor(private readonly decisionService: DecisionService) {}
 
-  // Estas tres rutas son vistas previas para la pantalla existente. No ejecutan acciones.
+  @Post('disparar-n8n')
+  async dispararN8n(@Body() body: Record<string, any>) {
+    return await this.decisionService.enviarAN8n(body);
+  }
   @Post('onboarding')
   evaluarOnboarding(@Body() dto: AlertaDto) {
     return {
